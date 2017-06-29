@@ -93,6 +93,8 @@ Includes
 
 .. code-block:: cpp
 
+   #ifndef qs_stack_queue_h
+   #define qs_stack_queue_h
    #include <assert.h>
 
 Traits
@@ -656,3 +658,4 @@ elem
        elem = next(elem);
    }
    #enddef
+   #endif //qs_stack_queue_h
