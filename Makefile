@@ -138,4 +138,4 @@ $(BUILD)/_rbtree_tests.o: $(BUILD)/rbtests.a
 
 include $(BASE)/mk/rules.mk
 
-$(BUILD)/src/mpack.o: CFLAGS=$(NWCLFALGS)
+$(BUILD)/src/mpack.o: CFLAGS=$(NWCFLAGS)
