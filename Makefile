@@ -20,6 +20,7 @@ endif
 OBJS := \
 	$(BUILD)/src/example.o \
 	$(BUILD)/src/rbtree.o \
+	$(BUILD)/src/mpack.o \
 	$(BUILD)/src/perf_insert.o \
 	$(BUILD)/src/perf_replace.o \
 	$(BUILD)/src/perf_delete.o
@@ -132,3 +133,5 @@ $(BUILD)/_rbtree_tests.o: $(BUILD)/rbtests.a
 		setfattr -n user.pax.flags -v "emr" $(BUILD)/*.so || true
 
 include $(BASE)/mk/rules.mk
+
+$(BUILD)/src/mpack.o: CFLAGS=$(NWCLFALGS)

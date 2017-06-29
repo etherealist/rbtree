@@ -21,7 +21,7 @@ LDFLAGS += -Wl,--gc-sections
 LDFLAGS += -lrt
 endif
 
-NWCFLAGS:=$(filter-out -Werror,$(CFLAGS))
+NWCFLAGS:=$(filter-out -pedantic,$(filter-out -Werror,$(CFLAGS)))
 
 $(BUILD)/%.o: $(BASE)/%.c
 	@mkdir -p "$(dir $@)"
