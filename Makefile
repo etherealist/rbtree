@@ -93,6 +93,9 @@ $(BUILD)/perf_replace: $(BUILD)/src/perf_replace.o $(BUILD)/src/rbtree.o
 $(BUILD)/perf_delete: $(BUILD)/src/perf_delete.o $(BUILD)/src/rbtree.o
 	$(CC) -o $@ $^ $(CFLAGS) $(LDFLAGS)
 
+$(BUILD)/test_mpipe: $(BUILD)/src/test_mpipe.o $(BUILD)/src/mpack.o $(BUILD)/src/mpipe.o
+	$(CC) -o $@ $^ $(CFLAGS) $(LDFLAGS)
+
 $(TESTS): $(HEADERS)
 
 $(OBJS): $(HEADERS)
@@ -122,7 +125,7 @@ doc: docs  ## Make documentation
 		rst2html $(BUILD)/src/rbtree.rg.h.rst $(BUILD)/rbtree.html || \
 		rst2html.py $(BUILD)/src/rbtree.rg.h.rst $(BUILD)/rbtree.html
 
-tests: module
+tests: module  $(BUILD)/test_mpipe
 	pytest
 
 xtests: module

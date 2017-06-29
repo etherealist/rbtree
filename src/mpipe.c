@@ -5,14 +5,14 @@ writeall(int fd, void *buf, size_t n)
 {
 	char *buffer = buf;
 	ssize_t r;
-	while (n) {
+	while(n) {
 		r = write(fd, buffer, n);
-		if (r < 0)
+		if(r < 0)
 			return -1;
 		buffer += (size_t)r;
 		n -= (size_t)r;
 	}
-	return 0;
+	return n;
 }
 
 ssize_t
@@ -21,11 +21,11 @@ readall(int fd, void *buf, size_t n)
 	char *buffer = buf;
 	size_t ptr = 0;
 	ssize_t r;
-	for (;;) {
+	for(;;) {
 		r = read(fd, buffer + ptr, n - ptr);
-		if (r < 0)
+		if(r < 0)
 			return -1;
-		if (r == 0)
+		if(r == 0)
 			break;
 		ptr += (size_t)r;
 	}
@@ -45,8 +45,8 @@ mpp_fdread_message(int fd, mpp_read_t* context)
     if(read_size != (ssize_t) msg_size)
         return NULL;
     mpack_tree_init(&context->tree, context->data, msg_size);
-    context->root = mpack_tree_root(&context->tree);
-    return &context->root;
+    context->node = mpack_tree_root(&context->tree);
+    return &context->node;
 }
 
 int
@@ -72,23 +72,23 @@ mpp_fdwrite_message(int fd, mpp_write_t* context)
 int
 mpp_write_message_fin(mpp_write_t* context)
 {
-    size_t write_size;
+    int ret;
     mpack_error_t err = mpack_writer_destroy(&context->writer);
     if(err != mpack_ok)
         return err;
-    write_size = writeall(
+    ret = writeall(
         context->fd,
         &context->size,
         sizeof(size_t)
     );
-    if(write_size != sizeof(size_t))
+    if(ret != 0)
         return -1;
-    writeall(
+    ret = writeall(
         context->fd,
         context->data,
         context->size
     );
-    if(write_size != context->size)
+    if(ret != 0)
         return -1;
     free(context->data);
     return 0;

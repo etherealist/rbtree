@@ -49,6 +49,7 @@ Requirements
 * gcc or clang
 * pytest
 * hypothesis
+* u-msgpack-python
 * cffi
 * rst2html
 

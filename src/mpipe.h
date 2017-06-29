@@ -88,7 +88,7 @@ struct mpp_read_s;
 typedef struct mpp_read_s mpp_read_t;
 struct mpp_read_s {
     mpack_tree_t tree;
-    mpack_node_t root;
+    mpack_node_t node;
     char* data;
 };
 
