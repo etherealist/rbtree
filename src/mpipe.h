@@ -27,13 +27,15 @@
 // mpack_node_t* mpp_read_message(mpp_read_t* context)
 //   Read a message and return the root node of a message. *tree* has to be
 //   released using mpp_*read_message_fin*. If your program accesses data of
-//   multiple messages you can use `context garbage-collection`_.
+//   multiple messages you can use `context garbage-collection`_. Returns NULL
+//   on error.
 //
 //   Also: mpp_fdread_message(int fd, mpp_read_t* context) use specified fd
 //   instead of stdin.
 //
 // int mpp_read_message_fin(mpp_read_t* context)
-//   Release all resources associated with the message. Returns 0 on success.
+//   Release all resources associated with the message. Returns 0 on success
+//   (see mpack_error_t).
 //
 // mpack_writer_t* mpp_write_message(mpp_write_t* context)
 //   Start writing a message. Use *mpack_writer_t* to created the message. See
@@ -43,7 +45,8 @@
 //   instead of stdout.
 //
 // int mpp_write_message_fin(mpp_write_t* context)
-//   Release all resources associated with the message. Returns 0 on success.
+//   Release all resources associated with the message. Returns 0 on success
+//   (see mpack_error_t)
 //
 // .. _mpack: https://github.com/ludocode/mpack
 //
@@ -84,9 +87,9 @@
 struct mpp_read_s;
 typedef struct mpp_read_s mpp_read_t;
 struct mpp_read_s {
-    int fd;
     mpack_tree_t tree;
     mpack_node_t root;
+    char* data;
 };
 
 struct mpp_write_s;
