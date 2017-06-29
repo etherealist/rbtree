@@ -16,7 +16,7 @@
 // mpipe.py
 // ========
 //
-// .. code: python
+// .. code-block:: python
 //
 //    proc = mpipe.open(["./build/test_mpipe"])
 //    mpipe.write(proc, (1, 0))
@@ -27,7 +27,7 @@
 // If you set the environment variable MPP_GDB to True. mpipe.open will attach
 // a gdb to the process. You need
 //
-// .. code: bash
+// .. code-block:: bash
 //
 //    sudo sh -c "echo 0 > /proc/sys/kernel/yama/ptrace_scope"
 //
@@ -36,7 +36,7 @@
 // If you set the environment variable MPP_RR to True. mpipe.open will record
 // an rr session. You need
 //
-// .. code: bash
+// .. code-block:: bash
 //
 //    sudo sh -c "echo 1 > /proc/sys/kernel/perf_event_paranoid"
 //

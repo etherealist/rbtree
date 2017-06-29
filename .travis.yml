@@ -1,5 +1,5 @@
 language: python
 python:
   - "3.6"
-install: pip3 install docutils pytest cffi hypothesis pygments
+install: pip3 install docutils pytest cffi hypothesis pygments u-msgpack-python
 script: make all
