@@ -1,9 +1,9 @@
 // .. image:: https://travis-ci.org/ganwell/rbtree.svg?branch=master
 //    :target: https://travis-ci.org/ganwell/rbtree/
 //
-// ==============
-// Red-Black Tree
-// ==============
+// ==================
+// Red-Black Tree 0.1
+// ==================
 //
 // * Bonus: `qs.h`_ (Queue / Stack), mpipe_ (message-pack over pipe)
 // * Textbook implementation
@@ -15,7 +15,6 @@
 // * Generic
 // * C99
 // * Easy to use, a bit complex to extend because it is generic [1]_
-// * Code size could be optimized [2]_
 // * MIT license
 // * By Jean-Louis Fuchs <ganwell@fangorn.ch>
 // * Based on Introduction To Algorithms
@@ -24,9 +23,6 @@
 // * Thanks a lot to both
 //
 // .. [1] My rgc preprocessor and its MACRO_DEBUG mode are very helpful.
-//
-// .. [2] It is quite easy to bind intermediate functions. But rbtree only uses
-//        about 2100 bytes (-Os), per type.
 //
 // .. _`qs.h`: https://github.com/ganwell/rbtree/blob/master/qs.rst
 // .. _mpipe: https://github.com/ganwell/rbtree/blob/master/mpipe.rst
@@ -262,19 +258,20 @@
 // cx##_delete_node(type** tree, type* node)
 //    Delete the known *node* from *tree*.
 //
-// cx##_delete(type** tree, type* key)
+// cx##_delete(type** tree, type* key, type** node)
 //    Delete the node matching *key* from *tree*. If *key* is not in the tree
-//    the function returns 1, 0 on success.
+//    the function returns 1, 0 on success. On success *node* is set to the
+//    deleted node.
 //
 // cx##_replace_node(type** tree, type* old, type* new)
 //    Replace known node *old* with *new*. If *old* and *new* are not equal the
 //    function will not do anything and returns 1, 0 on success.
 //
-// cx##_replace(type** tree, type* key, type* new)
+// cx##_replace(type** tree, type* key, type* new, type** old)
 //    Replace the node matching *key* with *new*. If *key* and *new* are not
 //    equal the function will not do anything and returns 1. If *key* is not in
 //    the tree the function will not do anything and returns 1. It returns 0 on
-//    success.
+//    success. On success *old* is set to the old node.
 //
 // cx##_find(type* tree, type* key, type** node)
 //    Find the node matching *key* and assign it to *node*. If *key* is not in
@@ -443,9 +440,11 @@
 //    0x20e T my_insert
 //    0x356 T my_delete_node
 //
-// About 2100 bytes. If code size really really matters to you, check_tree and
-// check_tree_rec could be removed and _rb_rotate_left_m could be bound and
-// called by delete and insert. But in my opinion 2100 bytes is small.
+// About 2100 bytes. If NDEBUG or RB_NO_CHECK is defined the my_check_tree and
+// my_check_tree_rec will be removed.
+//
+// Also _rb_rotate_left_m could be bound and called by delete and insert. But
+// in my opinion 2100 bytes is small.
 //
 // Lessons learned
 // ===============
@@ -517,6 +516,9 @@
 #include <assert.h>
 #ifndef RB_SIZE_T
 #   define RB_SIZE_T int
+#endif
+#ifdef NDEBUG
+#   define RB_NO_CHECK
 #endif
 //
 // Basic traits
@@ -864,6 +866,8 @@ do { \
         r  /* result */ \
 ) \
 do { \
+    assert(tree != NULL && "Tree was not initialized"); \
+    assert(node != nil && "Cannot insert nil node"); \
     assert(node != nil && "Cannot insert nil node"); \
     assert( \
         parent(node) == nil && \
@@ -981,6 +985,7 @@ do { \
         y \
 ) \
 { \
+    assert(tree != NULL && "Tree was not initialized"); \
     assert(tree != nil && "Cannot remove node from empty tree"); \
     assert(node != nil && "Cannot delete nil node"); \
     assert(( \
@@ -1124,6 +1129,7 @@ do { \
         node \
 ) \
 { \
+    assert(tree != NULL && "Tree was not initialized"); \
     assert(key != nil && "Do not use nil as search key"); \
     if(tree == nil) \
         node = nil; \
@@ -1177,6 +1183,7 @@ do { \
         new \
 ) \
 { \
+    assert(tree != NULL && "Tree was not initialized"); \
     assert(tree != nil && "The tree can't be nil"); \
     assert(old != nil && "The old node can't be nil"); \
     assert(new != nil && "The new node can't be nil"); \
@@ -1256,7 +1263,8 @@ do { \
     int \
     cx##_delete( \
             type** tree, \
-            type* key \
+            type* key, \
+            type** node \
     ); \
     int \
     cx##_replace_node( \
@@ -1268,7 +1276,8 @@ do { \
     cx##_replace( \
             type** tree, \
             type* key, \
-            type* new \
+            type* new, \
+            type** old \
     ); \
     int \
     cx##_find( \
@@ -1280,6 +1289,10 @@ do { \
     cx##_size( \
             type* tree \
     ); \
+    rb_bind_decl_debug_cx_m(cx, type) \
+
+#ifndef RB_NO_CHECK
+#define rb_bind_decl_debug_cx_m(cx, type) \
     void \
     cx##_check_tree(type* tree); \
     void \
@@ -1289,6 +1302,9 @@ do { \
             int *pathdepth \
     ); \
 
+#else
+#   define rb_bind_decl_debug_cx_m(cx, type)
+#endif
 #define rb_bind_decl_m(cx, type) rb_bind_decl_cx_m(cx, type)
 
 // rb_bind_impl_m
@@ -1420,12 +1436,12 @@ do { \
     int \
     cx##_delete( \
             type** tree, \
-            type* key \
+            type* key, \
+            type** node \
     ) \
     { \
-        type* node; \
-        if(cx##_find(*tree, key, &node) == 0) { \
-            cx##_delete_node(tree, node); \
+        if(cx##_find(*tree, key, node) == 0) { \
+            cx##_delete_node(tree, *node); \
             return 0; \
         } \
         return 1; \
@@ -1460,12 +1476,12 @@ do { \
     cx##_replace( \
             type** tree, \
             type* key, \
-            type* new \
+            type* new, \
+            type** old \
     ) \
     { \
-        type* old; \
-        if(cx##_find(*tree, key, &old) == 0) { \
-            return cx##_replace_node(tree, old, new); \
+        if(cx##_find(*tree, key, old) == 0) { \
+            return cx##_replace_node(tree, *old, new); \
         } \
         return 1; \
     } \
@@ -1503,6 +1519,26 @@ do { \
                 cx##_size(right(tree)) + 1 \
             ); \
     } \
+    _rb_bind_impl_debug_tr_m( \
+            cx, \
+            type, \
+            color, \
+            parent, \
+            left, \
+            right, \
+            cmp \
+    ) \
+
+#ifndef RB_NO_CHECK
+#define _rb_bind_impl_debug_tr_m( \
+        cx, \
+        type, \
+        color, \
+        parent, \
+        left, \
+        right, \
+        cmp \
+) \
     void \
     cx##_check_tree(type* tree) \
     { \
@@ -1527,6 +1563,18 @@ do { \
         *pathdepth \
     ) \
 
+#else
+#define _rb_bind_impl_debug_tr_m( \
+        cx, \
+        type, \
+        color, \
+        parent, \
+        left, \
+        right, \
+        cmp \
+) \
+
+#endif
 
 #define rb_bind_impl_cx_m(cx, type) \
     _rb_bind_impl_tr_m( \
@@ -2141,3 +2189,26 @@ do { \
 
 
 #endif // rb_tree_h
+
+// MIT License
+// ===========
+//
+// Copyright (c) 2017 Jean-Louis Fuchs
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.

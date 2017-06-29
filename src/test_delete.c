@@ -19,7 +19,9 @@ test_delete(int len, int* nodes, int* sorted, int count, int sum, int do_sum)
             rb_value_m(node) = nodes[i];
             //printf("%d ", nodes[i]);
             my_insert(&tree, node);
-            my_check_tree(tree);
+#           ifndef RB_NO_CHECK
+                my_check_tree(tree);
+#           endif
         }
         //printf("\n");
         BA((
@@ -33,7 +35,9 @@ test_delete(int len, int* nodes, int* sorted, int count, int sum, int do_sum)
         my_delete_node(&tree, node);
         int tsum = 0;
         int elems = 0;
-        my_check_tree(tree);
+#       ifndef RB_NO_CHECK
+            my_check_tree(tree);
+#       endif
         recursive_sum(&tsum, &elems, tree);
         BA(elems == count, "Iterator count failed");
         //printf("\n%d == %d, %d == %d\n", count, elems, sum, tsum);

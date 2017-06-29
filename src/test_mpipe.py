@@ -22,3 +22,4 @@ if __name__ == "__main__":
     res = mpipe.read(proc)
     print(res)
     mpipe.write(proc, (0,))
+    mpipe.close(proc)

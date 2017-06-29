@@ -1,4 +1,7 @@
 """Test if the tree stays consistent."""
+import mpipe
+import os
+from os import path
 from build._rbtree_tests import lib, ffi
 from hypothesis import settings
 from hypothesis.stateful import GenericStateMachine
@@ -125,5 +128,88 @@ class GenTree(GenericStateMachine):
             assert False
 
 
-with settings(max_examples=2000):
-    TestTree = GenTree.TestCase
+class GenMpipeTree(GenericStateMachine):
+    """Test if the stays consistent."""
+
+    def __init__(self):
+        self.comparison = set()
+        self.proc = mpipe.open([path.join(
+            os.environ["BUILD"],
+            "test_tree"
+        )])
+        mpipe.write(self.proc, (lib.fn_init, 0))
+        assert mpipe.read(self.proc) == [0]
+
+    def steps(self):
+        add_node = tuples(
+            just("add"),
+            integers(
+                min_value=-2**30,
+                max_value=(2**30) - 1
+            )
+        )
+        delete_node = tuples(just(
+            "delete_node"
+        ), sampled_from(sorted(self.comparison)))
+        replace_node = tuples(just(
+            "replace_node"
+        ), sampled_from(sorted(self.comparison)))
+        delete = tuples(just(
+            "delete"
+        ), sampled_from(sorted(self.comparison)))
+        replace = tuples(just(
+            "replace"
+        ), sampled_from(sorted(self.comparison)))
+        rnd_find = tuples(
+            just("rnd_find"),
+            integers(
+                min_value=-2**30,
+                max_value=(2**30) - 1
+            )
+        )
+        find = tuples(just("find"), sampled_from(sorted(self.comparison)))
+        if not self.comparison:
+            return add_node | rnd_find
+        else:
+            return (
+                add_node | delete_node | rnd_find | replace_node |
+                find | delete | replace
+            )
+
+    def execute_step(self, step):
+        proc = self.proc
+        action, value = step
+        if action == 'add':
+            mpipe.write(proc, (lib.fn_add, value))
+            if value in self.comparison:
+                assert mpipe.read(proc) != [0]
+            else:
+                assert mpipe.read(proc) == [0]
+            self.comparison.add(value)
+            return
+        elif action == "rnd_find":
+            mpipe.write(proc, (lib.fn_find, value))
+            if value in self.comparison:
+                assert mpipe.read(proc) == [0]
+            else:
+                assert mpipe.read(proc) != [0]
+            return
+        elif action == "find":
+            mpipe.write(proc, (lib.fn_find, value))
+        elif action == "replace_node":
+            mpipe.write(proc, (lib.fn_replace_node, value))
+        elif action == "replace":
+            mpipe.write(proc, (lib.fn_replace, value))
+        elif action == "delete":
+            assert action == "delete"
+            mpipe.write(proc, (lib.fn_remove, value))
+            self.comparison.remove(value)
+        else:
+            assert action == "delete_node"
+            mpipe.write(proc, (lib.fn_remove_node, value))
+            self.comparison.remove(value)
+        assert mpipe.read(proc) == [0]
+
+# with settings(max_examples=2000):
+#TestTree = GenTree.TestCase
+TestMpipeTree = GenMpipeTree.TestCase

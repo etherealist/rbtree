@@ -1,6 +1,6 @@
-// =====
-// mpipe
-// =====
+// =========
+// mpipe 0.1
+// =========
 //
 // Send message-packs over a pipe. Meant as a very simple RPC. It is compatible
 // with async coding and therefore used in rbtree and chirp to run hypothesis
@@ -23,6 +23,7 @@
 //    res = mpipe.read(proc)
 //    print(res)
 //    mpipe.write(proc, (0,))
+//    mpipe.close(proc)
 //
 // If you set the environment variable MPP_GDB to True. mpipe.open will attach
 // a gdb to the process. You need
@@ -42,6 +43,9 @@
 //
 // for that.
 //
+// If you set the environment variable MPP_MC to True. mpipe.open will run
+// valgrind --tool=memcheck.
+//
 // Development
 // ===========
 //
@@ -52,29 +56,36 @@
 // API
 // ===
 //
+// void mpp_init_context(mpp_read_t* context)
+//   Initialize the mpipe context.
+//
 // mpack_node_t* mpp_read_message(mpp_read_t* context)
 //   Read a message and return the root node of a message. *tree* has to be
 //   released using mpp_*read_message_fin*. If your program accesses data of
 //   multiple messages you can use `context garbage-collection`_. Returns NULL
 //   on error.
 //
-//   Also: mpp_fdread_message(int fd, mpp_read_t* context) use specified fd
+//   Also: mpp_fdread_message(int fd, mpp_context_t* context) use specified fd
 //   instead of stdin.
 //
-// int mpp_read_message_fin(mpp_read_t* context)
+// int mpp_read_message_fin(mpp_context_t* context)
 //   Release all resources associated with the message. Returns 0 on success
 //   (see mpack_error_t).
 //
-// mpack_writer_t* mpp_write_message(mpp_write_t* context)
+// mpack_writer_t* mpp_write_message(mpp_context_t* context)
 //   Start writing a message. Use *mpack_writer_t* to created the message. See
 //   mpack_. After the message is finished call *mpp_write_message_fin*.
+//   Returns null on error.
 //
-//   Also: mpp_fdwrite_message(int fd, mpp_write_t* context) use specified fd
+//   Also: mpp_fdwrite_message(int fd, mpp_context_t* context) use specified fd
 //   instead of stdout.
 //
-// int mpp_write_message_fin(mpp_write_t* context)
+// int mpp_write_message_fin(mpp_context_t* context)
 //   Release all resources associated with the message. Returns 0 on success
 //   (see mpack_error_t)
+//
+// int mpp_runner(mpp_function_handler func);
+//   Run a mpipe loop.
 //
 // .. _mpack: https://github.com/ludocode/mpack
 //
@@ -103,8 +114,56 @@
 #ifndef mpp_mpipe_h
 #define mpp_mpipe_h
 #include <unistd.h>
+#include <string.h>
 
 #include <mpack.h>
+
+// Structs
+// -------
+//
+// .. code-block:: cpp
+//
+//
+enum mpp_action {
+    mpp_none = 0,
+    mpp_write = 1,
+    mpp_read = 2
+};
+
+struct mpp_read_ctx_s;
+typedef struct mpp_read_ctx_s mpp_read_ctx_t;
+struct mpp_read_ctx_s {
+    mpack_tree_t tree;
+    mpack_node_t node;
+    char* data;
+};
+
+struct mpp_write_ctx_s;
+typedef struct mpp_write_ctx_s mpp_write_ctx_t;
+struct mpp_write_ctx_s {
+    int fd;
+    mpack_writer_t writer;
+    char* data;
+    size_t size;
+};
+
+struct mpp_context_s;
+typedef struct mpp_context_s mpp_context_t;
+struct mpp_context_s {
+    char current;
+    char last;
+    char rpc_mode;
+    mpp_write_ctx_t write;
+    mpp_read_ctx_t read;
+};
+
+// Callbacks
+// ---------
+//
+// .. code-block:: cpp
+//
+
+typedef void (*mpp_handler_cb_t)(mpack_node_t data, mpack_writer_t* writer);
 
 // Functions
 // ---------
@@ -112,32 +171,24 @@
 // .. code-block:: cpp
 //
 
-struct mpp_read_s;
-typedef struct mpp_read_s mpp_read_t;
-struct mpp_read_s {
-    mpack_tree_t tree;
-    mpack_node_t node;
-    char* data;
-};
-
-struct mpp_write_s;
-typedef struct mpp_write_s mpp_write_t;
-struct mpp_write_s {
-    int fd;
-    mpack_writer_t writer;
-    char* data;
-    size_t size;
-};
-
 mpack_node_t*
-mpp_fdread_message(int fd, mpp_read_t* context);
+mpp_fdread_message(int fd, mpp_context_t* context);
 int
-mpp_read_message_fin(mpp_read_t* context);
+mpp_read_message_fin(mpp_context_t* context);
 
 mpack_writer_t*
-mpp_fdwrite_message(int fd, mpp_write_t* context);
+mpp_fdwrite_message(int fd, mpp_context_t* context);
 int
-mpp_write_message_fin(mpp_write_t* context);
+mpp_write_message_fin(mpp_context_t* context);
+
+int
+mpp_runner(mpp_handler_cb_t func);
+
+// Inline for Windows
+// ------------------
+//
+// .. code-block:: cpp
+//
 
 #ifdef _WIN32
 #   if defined(_MSC_VER) && _MSC_VER < 1600
@@ -149,18 +200,58 @@ mpp_write_message_fin(mpp_write_t* context);
 #   define mpp_inline inline
 #endif
 
+
+static
+mpp_inline
+void
+mpp_init_context(mpp_context_t* context)
+{
+    memset(context, 0, sizeof(mpp_context_t));
+    context->last = mpp_none;
+    context->rpc_mode = 1;
+}
+
+// STDIO Functions
+// ---------------
+//
+// .. code-block:: cpp
+//
+
 static
 mpp_inline
 mpack_node_t*
-mpp_read_message(mpp_read_t* context)
+mpp_read_message(mpp_context_t* context)
 {
     return mpp_fdread_message(STDIN_FILENO, context);
 }
 static
 mpp_inline
 mpack_writer_t*
-mpp_write_message(mpp_write_t* context)
+mpp_write_message(mpp_context_t* context)
 {
     return mpp_fdwrite_message(STDOUT_FILENO, context);
 }
 #endif //mpp_mpipe_h
+
+// MIT License
+// ===========
+//
+// Copyright (c) 2017 Jean-Louis Fuchs
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.

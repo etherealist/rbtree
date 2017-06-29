@@ -96,6 +96,13 @@ $(BUILD)/perf_delete: $(BUILD)/src/perf_delete.o $(BUILD)/src/rbtree.o
 $(BUILD)/test_mpipe: $(BUILD)/src/test_mpipe.o $(BUILD)/src/mpack.o $(BUILD)/src/mpipe.o
 	$(CC) -o $@ $^ $(CFLAGS) $(LDFLAGS)
 
+$(BUILD)/test_tree: \
+		$(BUILD)/src/test_tree.o \
+		$(BUILD)/src/mpack.o \
+		$(BUILD)/src/mpipe.o \
+		$(BUILD)/src/rbtree.o
+	$(CC) -o $@ $^ $(CFLAGS) $(LDFLAGS)
+
 $(TESTS): $(HEADERS)
 
 $(OBJS): $(HEADERS)
@@ -125,8 +132,12 @@ doc: docs  ## Make documentation
 		rst2html $(BUILD)/src/rbtree.rg.h.rst $(BUILD)/rbtree.html || \
 		rst2html.py $(BUILD)/src/rbtree.rg.h.rst $(BUILD)/rbtree.html
 
-tests: module  $(BUILD)/test_mpipe
+tests: module  $(BUILD)/test_mpipe $(BUILD)/test_tree
+ifeq ($(TEST),)
 	pytest
+else
+	pytest -s -x -k $(TEST)
+endif
 
 xtests: module
 	pytest -x -s

@@ -49,6 +49,7 @@
 }
 #enddef
 
+#ifndef test_include
 struct node_s;
 typedef struct node_s node_t;
 struct node_s {
@@ -58,6 +59,7 @@ struct node_s {
     node_t* left;
     node_t* right;
 };
+#endif
 
 
 #define my_cmp_m(x, y) rb_safe_value_cmp_m(x, y)

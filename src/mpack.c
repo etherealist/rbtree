@@ -809,6 +809,11 @@ static void mpack_growable_writer_teardown(mpack_writer_t* writer) {
         // shrink the buffer to an appropriate size if the data is
         // much smaller than the buffer
         if (writer->used < writer->size / 2) {
+            // The user hasn't written anything -> its a bug
+            if(writer->used == 0) {
+                mpack_writer_flag_error(writer, mpack_error_bug);
+                return;
+            }
             char* buffer = (char*)mpack_realloc(writer->buffer, writer->used, writer->used);
             if (!buffer) {
                 MPACK_FREE(writer->buffer);

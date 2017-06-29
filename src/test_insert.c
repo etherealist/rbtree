@@ -298,7 +298,9 @@ test_insert(int len, int* nodes, int* sorted, int count, int sum, int do_sum)
             ), "Node not properly initialized");
             my_insert(&tree, node);
             //print_tree(0, tree, NULL);
-            my_check_tree(tree);
+#           ifndef RB_NO_CHECK
+                my_check_tree(tree);
+#           endif
         }
         int tsum = 0;
         int elems = 0;
