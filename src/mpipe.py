@@ -3,12 +3,24 @@
 import ctypes
 from subprocess import Popen, PIPE
 import sys
+import os
+import time
 import umsgpack
 
 
-def open(args : list) -> Popen:
+def open(args : list):
     """Open a subprocess for sending message-pack messages."""
-    return Popen(args, stdin=PIPE, stdout=PIPE)
+    if os.environ.get("MPP_GDB") == "True":
+        proc = Popen(args, stdin=PIPE, stdout=PIPE)
+        argv = ["gdb", "-p", str(proc.pid)]
+        if os.fork():
+            os.execlp(argv[0], *argv)
+        time.sleep(2)
+        return proc
+    elif os.environ.get("MPP_RR") == "True":
+        return Popen(["rr"] + args, stdin=PIPE, stdout=PIPE)
+    else:
+        return Popen(args, stdin=PIPE, stdout=PIPE)
 
 
 def write(proc : Popen, data) -> bool:

@@ -11,8 +11,36 @@
 // ============
 //
 // Copy mpipe.h and mpipe.c into your source. And add mpack_ to your project.
-// Use mpipe.py to send messages.
+// Use src/mpipe.py to send messages.
 //
+// mpipe.py
+// ========
+//
+// .. code: python
+//
+//    proc = mpipe.open(["./build/test_mpipe"])
+//    mpipe.write(proc, (1, 0))
+//    res = mpipe.read(proc)
+//    print(res)
+//    mpipe.write(proc, (0,))
+//
+// If you set the environment variable MPP_GDB to True. mpipe.open will attach
+// a gdb to the process. You need
+//
+// .. code: bash
+//
+//    sudo sh -c "echo 0 > /proc/sys/kernel/yama/ptrace_scope"
+//
+// for that.
+//
+// If you set the environment variable MPP_RR to True. mpipe.open will record
+// an rr session. You need
+//
+// .. code: bash
+//
+//    sudo sh -c "echo 1 > /proc/sys/kernel/perf_event_paranoid"
+//
+// for that.
 //
 // Development
 // ===========

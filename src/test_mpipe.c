@@ -34,7 +34,6 @@ main(void)
         }
         if(mpp_read_message_fin(&mpp_read) != 0)
             return 9;
-        return 0; //TODO remove
     }
     return 0;
 }
