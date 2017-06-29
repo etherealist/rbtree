@@ -21,6 +21,7 @@ OBJS := \
 	$(BUILD)/src/example.o \
 	$(BUILD)/src/rbtree.o \
 	$(BUILD)/src/mpack.o \
+	$(BUILD)/src/mpipe.o \
 	$(BUILD)/src/perf_insert.o \
 	$(BUILD)/src/perf_replace.o \
 	$(BUILD)/src/perf_delete.o
@@ -39,6 +40,7 @@ HEADERS := \
 	$(BUILD)/src/testing.h
 
 DOCS := \
+	$(BUILD)/src/mpipe.h.rst \
 	$(BUILD)/src/example.c.rst \
 	$(BUILD)/src/example.h.rst \
 	$(BUILD)/src/perf_insert.c.rst \
