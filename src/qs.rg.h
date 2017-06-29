@@ -21,6 +21,9 @@
 // API
 // ===
 //
+// Queue
+// -----
+//
 // qs_queue_bind_decl_m(context, type) alias rb_bind_decl_cx_m
 //    Bind the qs_queue function declarations for *type* to *context*. Usually
 //    used in a header.
@@ -52,6 +55,9 @@
 //    NULL at the end.
 //
 // You can use rb_for_m from rbtree.h with qs.
+//
+// Stack
+// -----
 //
 // qs_stack_bind_decl_m(context, type) alias rb_bind_decl_cx_m
 //    Bind the qs_stack function declarations for *type* to *context*. Usually

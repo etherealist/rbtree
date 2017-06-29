@@ -104,8 +104,10 @@ headers: $(HEADERS)  ## Make headers
 docs: $(DOCS)
 	cp -f $(BUILD)/src/rbtree.rg.h.rst $(BASE)/README.rst
 	cp -f $(BUILD)/src/qs.rg.h.rst $(BASE)/qs.rst
+	cp -f $(BUILD)/src/mpipe.h.rst $(BASE)/mpipe.rst
 	git add $(BASE)/README.rst
 	git add $(BASE)/qs.rst
+	git add $(BASE)/mpipe.rst
 
 rbtree: $(BUILD)/src/rbtree.h ## Make rbtree.h
 	cp -f $(BUILD)/src/rbtree.h $(BASE)/rbtree.h

@@ -1,11 +1,3 @@
-TODO: Review
-
-TODO: Comments in with ., lists don't
-
-TODO: Assert message don't have periods
-
-TODO: Word consistency for example always write red-black tree
-
 .. image:: https://travis-ci.org/ganwell/rbtree.svg?branch=master
    :target: https://travis-ci.org/ganwell/rbtree/
 
@@ -13,7 +5,7 @@ TODO: Word consistency for example always write red-black tree
 Red-Black Tree
 ==============
 
-* Bonus: `qs.h`_ (Queue / Stack)
+* Bonus: `qs.h`_ (Queue / Stack), mpipe_ (message-pack over pipe)
 * Textbook implementation
 * Extensive tests
 * Has parent pointers and therefore faster delete_node and constant time
@@ -37,10 +29,7 @@ Red-Black Tree
        about 2100 bytes (-Os), per type.
 
 .. _`qs.h`: https://github.com/ganwell/rbtree/blob/master/qs.rst
-
-
-WORK IN PROGRESS
-================
+.. _mpipe: https://github.com/ganwell/rbtree/blob/master/mpipe.rst
 
 Installation
 ============
