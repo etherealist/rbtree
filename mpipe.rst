@@ -29,12 +29,18 @@ mpack_node_t* mpp_read_message(mpp_read_t* context)
   released using mpp_*read_message_fin*. If your program accesses data of
   multiple messages you can use `context garbage-collection`_.
 
+  Also: mpp_fdread_message(int fd, mpp_read_t* context) use specified fd
+  instead of stdin.
+
 int mpp_read_message_fin(mpp_read_t* context)
   Release all resources associated with the message. Returns 0 on success.
 
 mpack_writer_t* mpp_write_message(mpp_write_t* context)
   Start writing a message. Use *mpack_writer_t* to created the message. See
   mpack_. After the message is finished call *mpp_write_message_fin*.
+
+  Also: mpp_fdwrite_message(int fd, mpp_write_t* context) use specified fd
+  instead of stdout.
 
 int mpp_write_message_fin(mpp_write_t* context)
   Release all resources associated with the message. Returns 0 on success.
@@ -65,6 +71,8 @@ Includes
 
    #ifndef mpp_mpipe_h
    #define mpp_mpipe_h
+   #include <unistd.h>
+   
    #include <mpack.h>
    
 Functions
@@ -76,6 +84,7 @@ Functions
    struct mpp_read_s;
    typedef struct mpp_read_s mpp_read_t;
    struct mpp_read_s {
+       int fd;
        mpack_tree_t tree;
        mpack_node_t root;
    };
@@ -83,19 +92,44 @@ Functions
    struct mpp_write_s;
    typedef struct mpp_write_s mpp_write_t;
    struct mpp_write_s {
+       int fd;
        mpack_writer_t writer;
        char* data;
        size_t size;
    };
    
    mpack_node_t*
-   mpp_read_message(mpp_read_t* context);
+   mpp_fdread_message(int fd, mpp_read_t* context);
    int
    mpp_read_message_fin(mpp_read_t* context);
    
    mpack_writer_t*
-   mpp_write_message(mpp_write_t* context);
+   mpp_fdwrite_message(int fd, mpp_write_t* context);
    int
    mpp_write_message_fin(mpp_write_t* context);
    
+   #ifdef _WIN32
+   #   if defined(_MSC_VER) && _MSC_VER < 1600
+   #       define mpp_inline __inline
+   #   else // _MSC_VER
+   #       define mpp_inline inline
+   #   endif // _MSC_VER
+   #else
+   #   define mpp_inline inline
+   #endif
+   
+   static
+   mpp_inline
+   mpack_node_t*
+   mpp_read_message(mpp_read_t* context)
+   {
+       return mpp_fdread_message(STDIN_FILENO, context);
+   }
+   static
+   mpp_inline
+   mpack_writer_t*
+   mpp_write_message(mpp_write_t* context)
+   {
+       return mpp_fdwrite_message(STDOUT_FILENO, context);
+   }
    #endif //mpp_mpipe_h
