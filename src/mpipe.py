@@ -6,6 +6,18 @@ import sys
 import os
 import time
 import umsgpack
+from contextlib import contextmanager
+
+
+@contextmanager
+def open_and_close(args : list):
+    """Open a subprocess for sending message-pack messages in a context.
+
+    After the context it will send a close message: (0,).
+    """
+    proc = open(args)
+    yield proc
+    write(proc, (0,))
 
 
 def open(args : list):
