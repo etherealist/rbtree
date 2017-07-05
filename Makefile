@@ -1,5 +1,8 @@
 .PHONY: clean cppcheck headers help todo rbtree doc all tests perf plot
 
+VERSION := "0.1"
+DIST_NAME := rbtree-qs-mpipe-$(VERSION)
+
 MEMCHECK := valgrind --tool=memcheck
 BASE := $(PWD)
 BUILD := $(BASE)/build
@@ -123,7 +126,7 @@ rbtree: $(BUILD)/src/rbtree.h ## Make rbtree.h
 	cp -f $(BUILD)/src/rbtree.h $(BASE)/rbtree.h
 	git add $(BASE)/rbtree.h
 
-qs: $(BUILD)/src/rbtree.h ## Make qs.h
+qs: $(BUILD)/src/qs.h ## Make qs.h
 	cp -f $(BUILD)/src/qs.h $(BASE)/qs.h
 	git add $(BASE)/qs.h
 
@@ -153,3 +156,17 @@ $(BUILD)/_rbtree_tests.o: $(BUILD)/rbtests.a
 include $(BASE)/mk/rules.mk
 
 $(BUILD)/src/mpack.o: CFLAGS=$(NWCFLAGS)
+
+tarball: rbtree qs docs
+	mkdir -p $(BUILD)/$(DIST_NAME)
+	mkdir -p $(BUILD)/$(DIST_NAME)/doc
+	cp -f $(BUILD)/src/rbtree.h $(BUILD)/$(DIST_NAME)/rbtree.h
+	cp -f $(BUILD)/src/qs.h $(BUILD)/$(DIST_NAME)/qs.h
+	cp -f $(BASE)/src/mpipe.* $(BUILD)/$(DIST_NAME)
+	cp -f $(BUILD)/src/rbtree.rg.h.rst $(BUILD)/$(DIST_NAME)/doc/rbtree.rst
+	cp -f $(BUILD)/src/qs.rg.h.rst $(BUILD)/$(DIST_NAME)/doc/qs.rst
+	cp -f $(BUILD)/src/mpipe.h.rst $(BUILD)/$(DIST_NAME)/doc/mpipe.rst
+	cd $(BUILD)/$(DIST_NAME)/doc && ln -sf rbtree.rst README.rst
+	rm -f $(BUILD)/$(DIST_NAME).tar*
+	cd $(BUILD) && tar -cf $(DIST_NAME).tar $(DIST_NAME)
+	xz -9 $(BUILD)/$(DIST_NAME).tar

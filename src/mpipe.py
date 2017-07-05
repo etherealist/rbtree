@@ -4,6 +4,8 @@ mpipe 0.1
 =========
 
 Send message-pack messages to subprocess.
+
+Mini RPC mostly used for testinng using hypothesis.
 """
 
 import ctypes

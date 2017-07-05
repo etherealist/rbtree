@@ -811,6 +811,7 @@ static void mpack_growable_writer_teardown(mpack_writer_t* writer) {
         if (writer->used < writer->size / 2) {
             // The user hasn't written anything -> its a bug
             if(writer->used == 0) {
+                MPACK_FREE(writer->buffer);
                 mpack_writer_flag_error(writer, mpack_error_bug);
                 return;
             }
