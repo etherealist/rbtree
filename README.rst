@@ -19,7 +19,7 @@ Red-Black Tree 0.1
 * By Jean-Louis Fuchs <ganwell@fangorn.ch>
 * Based on Introduction To Algorithms
 * Text review by Eva Fuchs
-* Code review by XXXX
+* Code review by Oliver Sauder @sliverc
 * Thanks a lot to both
 
 .. [1] My rgc preprocessor and its MACRO_DEBUG mode are very helpful.
@@ -103,11 +103,16 @@ books using the ISBN-number, we compare it using memcmp.
 
    #define bk_cmp_m(x, y) memcmp(x->isbn, y->isbn, 13)
 
+Since rbtree is implemented as macros, using uppercase for macros isn't a
+good convention, therefore we use the suffix _m to denote macros.
+
+The prefix bk\_ is used as convenience, see context_.
+
 Note if you do something like:
 
 .. code-block:: cpp
 
-   #define my_cmp_m(x, y) (x->value - y->value)
+   #define bk_cmp_m(x, y) (x->value - y->value)
 
 You may only use values from (MIN_INT / 4) - 1 to (MAX_INT / 4) since rbtree
 uses a int to store the result. To be safe write the comparator as:
@@ -115,9 +120,11 @@ uses a int to store the result. To be safe write the comparator as:
 .. code-block:: cpp
 
    #define rb_safe_cmp_m(x, y) (((x)>(y) ? 1 : ((x)<(y) ? -1 : 0)))
-   #define my_cmp_m(x, y) rb_safe_cmp(x->value, y->value)
+   #define bk_cmp_m(x, y) rb_safe_cmp(x->value, y->value)
 
 rb_safe_cmp_m is provided by rbtree.
+
+.. _context:
 
 Then we have to declare all the rbtree functions. rbtree uses a concept, I
 call context, to find functions it needs. For example the rbtree functions
