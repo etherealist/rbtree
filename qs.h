@@ -1,5 +1,5 @@
 // =================
-// Queue / Stack 0.1
+// Queue / Stack 0.2
 // =================
 //
 // Queue and stack with a rbtree-style interface. Both queue and stack use one
@@ -45,6 +45,15 @@
 // cx##_dequeue(type** queue, type** item)
 //    Dequeue an item from the queue. Queue will be set to NULL when empty.
 //
+// cx##_head(type* queue, type* item)
+//    *item* will be set to the item in front of the queue, which equals the
+//    oldest item or the item that is going to be dequeud. Is NULL when the
+//    queue is empty.
+//
+// cx##_head(type* queue, type* item)
+//    *item* will be set to the item in the back of the queue, which equals the
+//    newest item. Is NULL when the queue is empty.
+//
 // cx##_iter_init(type* tree, cx##_iter_t* iter, type** elem)
 //    Initializes *elem* to point to the first element in the queue. Use
 //    qs_queue_iter_decl_m to declare *iter* and *elem*. If the queue is empty
@@ -53,6 +62,9 @@
 // cx##_iter_next(cx##_iter_t* iter, type** elem)
 //    Move *elem* to the next element in the queue. *elem* will point to
 //    NULL at the end.
+//
+// cx##_top(type* stack, type* item)
+//    *item* will be set to the item on top of the stack.
 //
 // You can use rb_for_m from rbtree.h with qs.
 //
@@ -102,6 +114,23 @@
 #ifndef qs_stack_queue_h
 #define qs_stack_queue_h
 #include <assert.h>
+
+// Inline for Windows
+// ------------------
+//
+// .. code-block:: cpp
+//
+
+#ifdef _WIN32
+#   if defined(_MSC_VER) && _MSC_VER < 1600
+#       define mpp_inline __inline
+#   else // _MSC_VER
+#       define mpp_inline inline
+#   endif // _MSC_VER
+#else
+#   define qs_inline inline
+#endif
+
 //
 // Traits
 // ------
@@ -211,7 +240,7 @@
 //
 // .. code-block:: cpp
 //
-#define qs_queue_bind_decl_m(cx, type) \
+#define _qs_queue_bind_decl_tr_m(cx, type, next) \
     typedef type cx##_iter_t; \
     typedef type cx##_type_t; \
     void \
@@ -235,9 +264,36 @@
             cx##_iter_t* iter, \
             type** elem \
     ); \
+    static \
+    qs_inline \
+    void \
+    cx##_head( \
+            type* queue, \
+            type** item \
+    ) { \
+        if(queue != NULL) \
+            *item = next(queue); \
+        else \
+            *item = NULL; \
+    } \
+    static \
+    qs_inline \
+    void \
+    cx##_tail( \
+            type* queue, \
+            type** item \
+    ) { \
+        *item = queue; \
+    } \
 
 
-#define qs_queue_bind_decl_cx_m(cx, type) qs_queue_bind_decl_m(cx, type)
+#define qs_queue_bind_decl_cx_m(cx, type) \
+    _qs_queue_bind_decl_tr_m(cx, type, cx##_next_m) \
+
+
+#define qs_queue_bind_decl_m(cx, type) \
+    _qs_queue_bind_decl_tr_m(cx, type, qs_next_m) \
+
 
 // qs_queue_bind_impl_m
 // ---------------------
@@ -510,6 +566,15 @@
             cx##_iter_t* iter, \
             type** elem \
     ); \
+    static \
+    qs_inline \
+    void \
+    cx##_top( \
+            type* stack, \
+            type** item \
+    ) { \
+        *item = stack; \
+    } \
 
 
 #define qs_stack_bind_decl_cx_m(cx, type) qs_stack_bind_decl_m(cx, type)

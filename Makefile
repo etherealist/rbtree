@@ -1,6 +1,6 @@
 .PHONY: clean cppcheck headers help todo rbtree doc all tests perf plot
 
-VERSION := "0.1"
+VERSION := "0.2"
 DIST_NAME := rbtree-qs-mpipe-$(VERSION)
 
 MEMCHECK := valgrind --tool=memcheck
@@ -170,3 +170,4 @@ tarball: rbtree qs docs
 	rm -f $(BUILD)/$(DIST_NAME).tar*
 	cd $(BUILD) && tar -cf $(DIST_NAME).tar $(DIST_NAME)
 	xz -9 $(BUILD)/$(DIST_NAME).tar
+	cd $(BUILD) && gpg --output $(DIST_NAME).tar.xz.sig --detach-sig $(DIST_NAME).tar.xz

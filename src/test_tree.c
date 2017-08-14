@@ -217,6 +217,9 @@ test_handler(mpack_node_t data, mpack_writer_t* writer)
         case fn_test_tree_nil:
             return_val(writer, test_tree_nil());
             break;
+        case fn_quit:
+            exit(0);
+            break;
         default:
             assert(0 && "Not implemented");
     }

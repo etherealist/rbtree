@@ -36,11 +36,18 @@ test_stack_iter(int* values)
     (void)(values);
     qs_stack_iter_decl_cx_m(qq, iter, elem);
     int i = 0;
-    // TODO can we make iteration type safe?
     rb_for_m(qs, stack, iter, elem) {
         if(rb_value_m(elem) != values[i])
             return 1;
         i += 1;
     }
     return 0;
+}
+
+int
+test_stack_top(void)
+{
+    item_t* item;
+    qs_top(stack, &item);
+    return item->value;
 }

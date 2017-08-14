@@ -68,6 +68,8 @@ class GenStack(GenericStateMachine):
                 assert lib.test_stack_null() == 0
         else:
             assert False
+        if self.comparison:
+            assert lib.test_stack_top() == self.comparison[-1].item.value
 
 
 with settings(max_examples=2000):

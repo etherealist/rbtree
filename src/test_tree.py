@@ -3,7 +3,7 @@ import mpipe
 import os
 from os import path
 from build._rbtree_tests import lib, ffi
-from hypothesis import settings
+from hypothesis import settings, Verbosity
 from hypothesis.stateful import GenericStateMachine
 from hypothesis.strategies import tuples, sampled_from, just, integers
 
@@ -133,12 +133,18 @@ class GenMpipeTree(GenericStateMachine):
 
     def __init__(self):
         self.comparison = set()
+        build = os.environ.get("BUILD")
         self.proc = mpipe.open([path.join(
-            os.environ["BUILD"],
+            build or "build",
             "test_tree"
         )])
         mpipe.write(self.proc, (lib.fn_init, 0))
         assert mpipe.read(self.proc) == [0]
+
+    def teardown(self):
+        mpipe.write(self.proc, (lib.fn_quit, 0))
+        self.proc.wait(timeout=1)
+        del self.proc  # Hypothesis seems to keep GSM objects
 
     def steps(self):
         add_node = tuples(
@@ -210,6 +216,7 @@ class GenMpipeTree(GenericStateMachine):
             self.comparison.remove(value)
         assert mpipe.read(proc) == [0]
 
-# with settings(max_examples=2000):
-#TestTree = GenTree.TestCase
-TestMpipeTree = GenMpipeTree.TestCase
+
+with settings(max_examples=2000, verbosity=Verbosity.verbose):
+    TestTree = GenTree.TestCase
+    TestMpipeTree = GenMpipeTree.TestCase

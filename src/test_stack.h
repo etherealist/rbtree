@@ -10,3 +10,5 @@ int
 test_stack_null(void);
 int
 test_stack_iter(int* values);
+int
+test_stack_top(void);

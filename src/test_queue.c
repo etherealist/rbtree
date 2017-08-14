@@ -43,3 +43,19 @@ test_queue_iter(int* values)
     }
     return 0;
 }
+
+int
+test_queue_head(void)
+{
+    item_t* item;
+    qq_head(queue, &item);
+    return item->value;
+}
+
+int
+test_queue_tail(void)
+{
+    item_t* item;
+    qq_tail(queue, &item);
+    return item->value;
+}

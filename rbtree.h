@@ -2,7 +2,7 @@
 //    :target: https://travis-ci.org/ganwell/rbtree/
 //
 // ==================
-// Red-Black Tree 0.1
+// Red-Black Tree 0.2
 // ==================
 //
 // * Bonus: `qs.h`_ (Queue / Stack), mpipe_ (message-pack over pipe)

@@ -67,6 +67,9 @@ class GenQueue(GenericStateMachine):
                 assert lib.test_queue_null() == 0
         else:
             assert False
+        if self.comparison:
+            assert lib.test_queue_tail() == self.comparison[0].item.value
+            assert lib.test_queue_head() == self.comparison[-1].item.value
 
 
 with settings(max_examples=2000):

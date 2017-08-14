@@ -15,3 +15,7 @@ int
 test_queue_null(void);
 int
 test_queue_iter(int* values);
+int
+test_queue_head(void);
+int
+test_queue_tail(void);
