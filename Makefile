@@ -1,6 +1,6 @@
 .PHONY: clean cppcheck headers help todo rbtree doc all tests perf plot
 
-VERSION := "0.2"
+VERSION := "0.3"
 DIST_NAME := rbtree-qs-mpipe-$(VERSION)
 
 MEMCHECK := valgrind --tool=memcheck
