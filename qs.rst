@@ -213,7 +213,6 @@ item
            item
    )
    {
-       assert(item == NULL && "Item should be NULL");
        if(queue != NULL) {
            item = next(queue);
            if(next(queue) == queue)
@@ -221,7 +220,8 @@ item
            else
                next(queue) = next(item);
            next(item) = NULL;
-       }
+       } else
+           item = NULL;
    }
    #enddef
    
@@ -518,9 +518,8 @@ item
            item
    )
    {
-       assert(item == NULL && "Item should be NULL");
+       item = stack;
        if(stack != NULL) {
-           item = stack;
            stack = next(stack);
            next(item) = NULL;
        }
