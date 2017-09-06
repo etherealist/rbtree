@@ -204,7 +204,7 @@ first. The tree may not be modified during iteration.
 
 .. code-block:: cpp
 
-   rb_iter_decl_m(bk, bk_iter, bk_elem);
+   rb_iter_decl_cx_m(bk, bk_iter, bk_elem);
    rb_for_m(bk, tree, bk_iter, bk_elem) {
        printf("%s\n", bk_elem->isbn);
    }
