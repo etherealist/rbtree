@@ -104,7 +104,7 @@
 //    };
 //
 // You can add the fields color, parent, left and right to any existing struct.
-// It is also possible to use different names than the above (see Extendend).
+// It is also possible to use different names than the above (see Extended_).
 //
 // Next we have to define the comparator function, since we want to lookup
 // books using the ISBN-number, we compare it using memcmp.
@@ -318,6 +318,8 @@
 //
 // Extended
 // --------
+//
+// .. _Extended:
 //
 // Many functions x come in two flavors
 //
