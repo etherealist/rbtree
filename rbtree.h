@@ -2,7 +2,7 @@
 //    :target: https://travis-ci.org/ganwell/rbtree/
 //
 // ==================
-// Red-Black Tree 0.3
+// Red-Black Tree 0.4
 // ==================
 //
 // * Bonus: `qs.h`_ (Queue / Stack), mpipe_ (message-pack over pipe)
@@ -31,6 +31,16 @@
 // ============
 //
 // Copy rbtree.h into your source.
+//
+// Changes
+// =======
+//
+// 0.3 -> 0.4
+// ----------
+//
+// * Correctly enable cppcheck
+// * Fix style errors reported by cppcheck
+// * Fix bad asserts in performance tests
 //
 // Development
 // ===========

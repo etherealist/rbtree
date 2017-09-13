@@ -1,5 +1,5 @@
 =========
-mpipe 0.3
+mpipe 0.4
 =========
 
 Send message-packs over a pipe. Meant as a very simple RPC. It is compatible
