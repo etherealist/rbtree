@@ -17,6 +17,7 @@ SGLIB_DEFINE_RBTREE_PROTOTYPES(
     color,
     rb_value_cmp_m
 )
+// cppcheck-suppress *
 SGLIB_DEFINE_RBTREE_FUNCTIONS(
     node_t,
     left,
@@ -32,7 +33,6 @@ main(void)
     node_t* tree;
     my_tree_init(&tree);
     node_t* node;
-    node_t* key;
     clock_t start, end;
     double cpu_time_used = 0.1;
     (void)(cpu_time_used);
@@ -65,7 +65,7 @@ main(void)
         }
     }
     fprintf(stderr, "prepare: ");
-    assert(tree = my_nil_ptr);
+    assert(tree == my_nil_ptr);
     for(int i = 0; i < MSIZE; i++) {
         node = &mnodes[i];
         if(rb_value_m(node) != 0)
@@ -75,7 +75,7 @@ main(void)
     printf("\n\n\"rbtree_delete\"\n");
     start = clock();
     for(int i = 0; i < MSIZE; i++) {
-        key = &mnodes[i];
+        node_t* key = &mnodes[i];
         my_find(tree, key, &node);
         my_delete_node(&tree, node);
         if(((i + 1) % 10000) == 0) {
@@ -85,7 +85,7 @@ main(void)
             start = clock();
         }
     }
-    assert(tree = my_nil_ptr);
+    assert(tree == my_nil_ptr);
     fprintf(stderr, "prepare: ");
     tree = NULL;
     for(int i = 0; i < MSIZE; i++) {

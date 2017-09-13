@@ -527,23 +527,6 @@
 #ifdef NDEBUG
 #   define RB_NO_CHECK
 #endif
-
-// Inline for Windows
-// ------------------
-//
-// .. code-block:: cpp
-//
-
-#ifdef _WIN32
-#   if defined(_MSC_VER) && _MSC_VER < 1600
-#       define rb_inline __inline
-#   else // _MSC_VER
-#       define rb_inline inline
-#   endif // _MSC_VER
-#else
-#   define rb_inline inline
-#endif
-
 //
 // Basic traits
 // ============

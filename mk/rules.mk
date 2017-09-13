@@ -126,6 +126,10 @@ clean:  ## Clean build
 cppcheck: headers  ## Static analysis
 ifneq ($(TRAVIS),true)
 	cppcheck -v \
+		--enable=style,performance,portability \
+		--suppress=unusedFunction \
+		--suppress=*:*mpack.? \
+		--config-exclude="$(BASE)/src/mpack" \
 		--error-exitcode=1 \
 		--std=c99 \
 		--inline-suppr \

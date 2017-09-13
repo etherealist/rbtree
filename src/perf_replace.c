@@ -17,6 +17,7 @@ SGLIB_DEFINE_RBTREE_PROTOTYPES(
     color,
     rb_value_cmp_m
 )
+// cppcheck-suppress *
 SGLIB_DEFINE_RBTREE_FUNCTIONS(
     node_t,
     left,
