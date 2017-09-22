@@ -40,7 +40,12 @@ def open(args : list, rpc_mode : bool=True) -> Popen:
         proc = Popen(["rr"] + args, stdin=PIPE, stdout=PIPE)
     elif os.environ.get("MPP_MC") == "True":
         proc = Popen(
-            ["valgrind", "--tool=memcheck"] + args,
+            [
+                "valgrind",
+                "--tool=memcheck",
+                "--leak-check=full",
+                "--error-exitcode=1",
+            ] + args,
             stdin=PIPE,
             stdout=PIPE
         )

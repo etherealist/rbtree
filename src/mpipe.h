@@ -44,7 +44,7 @@
 // for that.
 //
 // If you set the environment variable MPP_MC to True. mpipe.open will run
-// valgrind --tool=memcheck.
+// valgrind --tool=memcheck --leak-check=full --error-exitcode=1
 //
 // Development
 // ===========

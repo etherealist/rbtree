@@ -3,7 +3,6 @@
 VERSION := "0.4"
 DIST_NAME := rbtree-qs-mpipe-$(VERSION)
 
-MEMCHECK := valgrind --tool=memcheck
 BASE := $(PWD)
 BUILD := $(BASE)/build
 PYTHONPATH := $(BASE)
