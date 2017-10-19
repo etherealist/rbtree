@@ -130,7 +130,7 @@
 // .. code-block:: cpp
 //
 //    #define rb_safe_cmp_m(x, y) (((x)>(y) ? 1 : ((x)<(y) ? -1 : 0)))
-//    #define bk_cmp_m(x, y) rb_safe_cmp(x->value, y->value)
+//    #define bk_cmp_m(x, y) rb_safe_cmp_m(x->value, y->value)
 //
 // rb_safe_cmp_m is provided by rbtree.
 //
