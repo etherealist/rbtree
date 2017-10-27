@@ -1,5 +1,5 @@
 // =================
-// Queue / Stack 0.4
+// Queue / Stack 0.5
 // =================
 //
 // Queue and stack with a rbtree-style interface. Both queue and stack use one
@@ -115,23 +115,6 @@
 #define qs_stack_queue_h
 #include <assert.h>
 
-// Inline for Windows
-// ------------------
-//
-// .. code-block:: cpp
-//
-
-#ifdef _WIN32
-#   if defined(_MSC_VER) && _MSC_VER < 1600
-#       define qs_inline __inline
-#   else // _MSC_VER
-#       define qs_inline inline
-#   endif // _MSC_VER
-#else
-#   define qs_inline inline
-#endif
-
-//
 // Traits
 // ------
 //
@@ -264,27 +247,16 @@
             cx##_iter_t* iter, \
             type** elem \
     ); \
-    static \
-    qs_inline \
     void \
     cx##_head( \
             type* queue, \
             type** item \
-    ) { \
-        if(queue != NULL) \
-            *item = next(queue); \
-        else \
-            *item = NULL; \
-    } \
-    static \
-    qs_inline \
+    ); \
     void \
     cx##_tail( \
             type* queue, \
             type** item \
-    ) { \
-        *item = queue; \
-    } \
+    ); \
 
 
 #define qs_queue_bind_decl_cx_m(cx, type) \
@@ -355,6 +327,23 @@
             iter, \
             *elem \
         ) \
+    } \
+    void \
+    cx##_head( \
+            type* queue, \
+            type** item \
+    ) { \
+        if(queue != NULL) \
+            *item = next(queue); \
+        else \
+            *item = NULL; \
+    } \
+    void \
+    cx##_tail( \
+            type* queue, \
+            type** item \
+    ) { \
+        *item = queue; \
     } \
 
 
@@ -565,15 +554,11 @@
             cx##_iter_t* iter, \
             type** elem \
     ); \
-    static \
-    qs_inline \
     void \
     cx##_top( \
             type* stack, \
             type** item \
-    ) { \
-        *item = stack; \
-    } \
+    ); \
 
 
 #define qs_stack_bind_decl_cx_m(cx, type) qs_stack_bind_decl_m(cx, type)
@@ -638,6 +623,13 @@
             next, \
             *elem \
         ) \
+    } \
+    void \
+    cx##_top( \
+            type* stack, \
+            type** item \
+    ) { \
+        *item = stack; \
     } \
 
 
