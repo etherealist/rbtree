@@ -1,6 +1,6 @@
 .PHONY: clean cppcheck headers help todo rbtree doc all tests perf plot
 
-VERSION := "0.4"
+VERSION := "0.5"
 DIST_NAME := rbtree-qs-mpipe-$(VERSION)
 
 BASE := $(PWD)
