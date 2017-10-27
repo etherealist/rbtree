@@ -13,7 +13,10 @@ from subprocess import Popen, PIPE, TimeoutExpired
 import sys
 import os
 import time
-import umsgpack
+try:
+    import umsgpack
+except ImportError:
+    import msgpack as umsgpack
 from contextlib import contextmanager
 
 
@@ -72,7 +75,7 @@ def close(proc : Popen):
 def write(proc : Popen, data):
     """Write message to the process."""
     if proc._mpipe_last == "write":
-        raise RuntimeError("Consecutive write not allowed in rpc mode")
+        raise RuntimeError("Consecutive write not allowed in rpc_mode")
     proc._mpipe_last = "write"
     pack = umsgpack.dumps(data)
     size = bytes(ctypes.c_size_t(len(pack)))
@@ -84,7 +87,7 @@ def write(proc : Popen, data):
 def read(proc : Popen):
     """Read message from the process, returns None on failure."""
     if proc._mpipe_last == "read":
-        raise RuntimeError("Consecutive read not allowed in rpc mode")
+        raise RuntimeError("Consecutive read not allowed in rpc_mode")
     proc._mpipe_last = "read"
     size = proc.stdout.read(ctypes.sizeof(ctypes.c_size_t))
     size = int.from_bytes(size,  sys.byteorder)
