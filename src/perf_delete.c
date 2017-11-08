@@ -68,8 +68,9 @@ main(void)
     assert(tree == my_nil_ptr);
     for(int i = 0; i < MSIZE; i++) {
         node = &mnodes[i];
-        if(rb_value_m(node) != 0)
+        if(rb_value_m(node) != 0) {
             my_insert(&tree, node);
+        }
     }
     fprintf(stderr, "rbtree_delete\n");
     printf("\n\n\"rbtree_delete\"\n");

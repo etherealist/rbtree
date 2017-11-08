@@ -310,8 +310,9 @@ test_insert(int len, int* nodes, int* sorted, int count, int sum, int do_sum)
         node = tree;
         rb_for_m(my, tree, iter, elem) {
             //printf("%d ", rb_value_m(elem));
-            if(sorted[elems] != rb_value_m(elem))
+            if(sorted[elems] != rb_value_m(elem)) {
                 fail = 1;
+            }
             tsum += rb_value_m(elem);
             elems += 1;
         };
@@ -319,16 +320,18 @@ test_insert(int len, int* nodes, int* sorted, int count, int sum, int do_sum)
         BA(node == tree, "Iter changed tree");
         //printf("\nf%d == %d, %d == %d\n", count, elems, sum, tsum);
         BA(elems == count, "Iterator count failed");
-        if(do_sum)
+        if(do_sum) {
             BA(tsum == sum, "Iterator sum failed");
+        }
         tsum = 0;
         elems = 0;
         recursive_sum(&tsum, &elems, tree);
         BA(node == tree, "Sum changed tree");
         //printf("\na%d == %d, %d == %d\n", count, elems, sum, tsum);
         BA(elems == count, "Iterator count failed");
-        if(do_sum)
+        if(do_sum) {
             BA(tsum == sum, "Iterator sum failed");
+        }
     } while(0);
     free(mnodes);
     return ret;

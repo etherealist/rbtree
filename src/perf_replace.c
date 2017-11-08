@@ -86,10 +86,11 @@ main(void)
         ) == 0)
             rb_value_m(node) = rand() / 8;
         start = clock();
-        if(i == 0)
+        if(i == 0) {
             r = 0;
-        else
+        } else {
             r = rand() % i;
+        }
         node = &mnodes[r];
         start = clock();
         for(int n = 0; n < 10000; n++) {

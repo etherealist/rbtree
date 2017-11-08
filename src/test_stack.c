@@ -37,8 +37,9 @@ test_stack_iter(int* values)
     qs_stack_iter_decl_cx_m(qq, iter, elem);
     int i = 0;
     rb_for_m(qs, stack, iter, elem) {
-        if(rb_value_m(elem) != values[i])
+        if(rb_value_m(elem) != values[i]) {
             return 1;
+        }
         i += 1;
     }
     return 0;

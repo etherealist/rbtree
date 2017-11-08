@@ -113,8 +113,9 @@ test_replace_node2(int val)
     new->value = val;
     my_find(tree, &key, &old);
     int ret = my_replace_node(&tree, old, new);
-    if(rb_value_m(old) != rb_value_m(new))
+    if(rb_value_m(old) != rb_value_m(new)) {
         ret = 1;
+    }
     free(old);
 #   ifndef RB_NO_CHECK
         my_check_tree(tree);
@@ -142,8 +143,9 @@ test_replace2(int val)
     rb_value_m(&key) = val;
     rb_value_m(new) = val;
     int ret = my_replace(&tree, &key, new, &old);
-    if(rb_value_m(old) != rb_value_m(new))
+    if(rb_value_m(old) != rb_value_m(new)) {
         ret = 1;
+    }
     free(old);
 #   ifndef RB_NO_CHECK
         my_check_tree(tree);

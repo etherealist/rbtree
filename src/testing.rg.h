@@ -110,18 +110,21 @@ print_tree(int n, node_t* l, node_t* r) {
         rv,
         rc
     );
-    if(l != my_nil_ptr)
+    if(l != my_nil_ptr) {
         print_tree(n, rb_left_m(l), rb_right_m(l));
-    if(r != my_nil_ptr)
+    }
+    if(r != my_nil_ptr) {
         print_tree(n, rb_left_m(r), rb_right_m(r));
+    }
 }
 
 static
 void
 recursive_sum(int* sum, int* elems, node_t* node)
 {
-    if(node == my_nil_ptr)
+    if(node == my_nil_ptr) {
         return;
+    }
     *sum += rb_value_m(node);
     *elems += 1;
     recursive_sum(sum, elems, rb_left_m(node));

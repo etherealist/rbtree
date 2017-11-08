@@ -37,8 +37,9 @@ test_queue_iter(int* values)
     qs_queue_iter_decl_cx_m(qq, iter, elem);
     int i = 0;
     rb_for_m(qq, queue, iter, elem) {
-        if(rb_value_m(elem) != values[i])
+        if(rb_value_m(elem) != values[i]) {
             return 1;
+        }
         i += 1;
     }
     return 0;

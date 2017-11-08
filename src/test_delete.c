@@ -41,23 +41,26 @@ test_delete(int len, int* nodes, int* sorted, int count, int sum, int do_sum)
         recursive_sum(&tsum, &elems, tree);
         BA(elems == count, "Iterator count failed");
         //printf("\n%d == %d, %d == %d\n", count, elems, sum, tsum);
-        if(do_sum)
+        if(do_sum) {
             BA(tsum == sum, "Iterator sum failed");
+        }
         rb_iter_decl_cx_m(my, iter, elem);
         i = 0;
         tsum = 0;
         int fail = 0;
         rb_for_m(my, tree, iter, elem) {
-            if(sorted[i] != rb_value_m(elem))
+            if(sorted[i] != rb_value_m(elem)) {
                 fail = 1;
+            }
             tsum += rb_value_m(elem);
             BA(i < count, "Iterator count failed");
             i += 1;
         }
         BA(fail == 0, "Not correctly sorted");
         BA(i == count, "Iterator count failed");
-        if(do_sum)
+        if(do_sum) {
             BA(tsum == sum, "Iterator sum failed");
+        }
     } while(0);
     free(mnodes);
     return ret;
