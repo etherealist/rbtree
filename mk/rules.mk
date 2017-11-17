@@ -46,10 +46,10 @@ endif
 $(BUILD)/%.h: $(BASE)/%.rg.h
 	@mkdir -p "$(dir $@)"
 ifeq ($(VERBOSE),True)
-	$(BASE)/mk/rgc $(CC) $< $@
+	$(BASE)/mk/rgc $< $@
 else
 	@echo RGC $<
-	@$(BASE)/mk/rgc $(CC) $< $@
+	@$(BASE)/mk/rgc $< $@
 endif
 
 $(BUILD)/%.c.rst: $(BASE)/%.c
