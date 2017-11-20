@@ -142,9 +142,8 @@ class GenMpipeTree(GenericStateMachine):
         assert mpipe.read(self.proc) == [0]
 
     def teardown(self):
-        mpipe.write(self.proc, (lib.fn_quit, 0))
-        self.proc.wait(timeout=1)
-        del self.proc  # Hypothesis seems to keep GSM objects
+        mpipe.close(self.proc)
+        self.proc = None  # Hypothesis seems to keep GSM objects
 
     def steps(self):
         add_node = tuples(
