@@ -1331,11 +1331,11 @@ do { \
             type* key, \
             type** node \
     ); \
-    rb_bind_decl_debug_cx_m(cx, type) \
     RB_SIZE_T \
     cx##_size( \
             type* tree \
-    ) \
+    ); \
+    rb_bind_decl_debug_cx_m(cx, type) \
 
 #ifndef RB_NO_CHECK
 #define rb_bind_decl_debug_cx_m(cx, type) \
