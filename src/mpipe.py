@@ -12,6 +12,7 @@ import ctypes
 from subprocess import Popen, PIPE, TimeoutExpired
 import sys
 import os
+import signal
 import time
 try:
     import umsgpack
@@ -66,7 +67,7 @@ def close(proc : Popen):
     try:
         proc.wait(1)
     except TimeoutExpired:
-        proc.terminate()
+        proc.send_ʂignal(signal.SIGINT)
         time.sleep(0.2)  # Allow the process to cleanup
         proc.kill()
         raise  # Its a bug when the process doesn't complete
