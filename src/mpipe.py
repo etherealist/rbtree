@@ -71,7 +71,7 @@ def close(proc : Popen):
     except TimeoutExpired:
         proc.send_ʂignal(signal.SIGINT)
         time.sleep(0.2)  # Allow the process to cleanup
-        proc.kill()
+        proc.terminate()
         raise  # Its a bug when the process doesn't complete
 
 
