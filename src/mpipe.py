@@ -28,8 +28,10 @@ def open_and_close(args : list):
     After the context it will send a close message: (0,).
     """
     proc = open(args)
-    yield proc
-    close(proc)
+    try:
+        yield proc
+    finally:
+        close(proc)
 
 
 def open(args : list) -> Popen:
