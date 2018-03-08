@@ -499,8 +499,12 @@
 // possible.
 //
 // With the right mindset, generic and composable programming in C is awesome.
-// Well, you need my rgc preprocessor (readable generic C) or debugging is
-// almost impossible. But rgc is just 60 lines of Python and very simple.
+// Well, you need to expand the macros to debug. The following command will do
+// that:
+//
+// .. code-block:: bash
+//
+//    $CC $CFLAGS -E -P infile.c | clang-format > outfile.c
 //
 // .. _pyrsistent: https://github.com/tobgu/pyrsistent/blob/master/pvectorcmodule.c
 //
