@@ -268,6 +268,9 @@
 //    used in a c-file. This variant uses cx##_*_m traits, which means you have
 //    to define them.
 //
+// rb_bind_cx_m/rb_bind_m(context, type)
+//    Shortcut to bind declaration and impartation at once.
+//
 // rb_safe_value_cmp_m(x, y)
 //    Basis for safe value comparators. *x* and *y* are comparable values of
 //    the same type.
