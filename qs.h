@@ -1,5 +1,5 @@
 // =================
-// Queue / Stack 0.6
+// Queue / Stack 0.7
 // =================
 //
 // Queue and stack with a rbtree-style interface. Both queue and stack use one
@@ -38,7 +38,7 @@
 //    you have to define them.
 //
 // qs_queue_bind_cx_m/qs_queue_bind_m(context, type)
-//    Shortcut to bind declaration and impartation at once.
+//    Shortcut to bind declaration and implementation at once.
 //
 // Then the following functions will be available.
 //
@@ -88,7 +88,7 @@
 //    you have to define them.
 //
 // qs_stack_bind_cx_m/qs_stack_bind_m(context, type)
-//    Shortcut to bind declaration and impartation at once.
+//    Shortcut to bind declaration and implementation at once.
 //
 // Then the following functions will be available.
 //
