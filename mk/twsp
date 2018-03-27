@@ -26,7 +26,7 @@ with codecs.open(file_, encoding="ASCII") as f:
     except UnicodeDecodeError as e:
         ret = 1
         print(
-            "%s:1:0: This project is ascii only, there is a non ascii"
+            "%s:1:0: This project is ascii only, there is a non-ascii"
             "char at position %d" % (file_, e.start)
         )
 
