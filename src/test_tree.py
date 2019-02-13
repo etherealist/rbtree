@@ -3,7 +3,6 @@ import mpipe
 import os
 from os import path
 from build._rbtree_tests import lib, ffi
-from hypothesis import settings, Verbosity
 from hypothesis.stateful import GenericStateMachine
 from hypothesis.strategies import tuples, sampled_from, just, integers
 
@@ -216,6 +215,5 @@ class GenMpipeTree(GenericStateMachine):
         assert mpipe.read(proc) == [0]
 
 
-with settings(max_examples=2000, verbosity=Verbosity.verbose):
-    TestTree = GenTree.TestCase
-    TestMpipeTree = GenMpipeTree.TestCase
+TestTree = GenTree.TestCase
+TestMpipeTree = GenMpipeTree.TestCase

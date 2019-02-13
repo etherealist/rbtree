@@ -1,6 +1,5 @@
 """Test if the stack stays consistent."""
 from build._rbtree_tests import lib, ffi
-from hypothesis import settings
 from hypothesis.stateful import GenericStateMachine
 from hypothesis.strategies import tuples, just, integers
 
@@ -72,5 +71,4 @@ class GenStack(GenericStateMachine):
             assert lib.test_stack_top() == self.comparison[-1].item.value
 
 
-with settings(max_examples=2000):
-    TestStack = GenStack.TestCase
+TestStack = GenStack.TestCase

@@ -1,6 +1,5 @@
 """Test if the queue stays consistent."""
 from build._rbtree_tests import lib, ffi
-from hypothesis import settings
 from hypothesis.stateful import GenericStateMachine
 from hypothesis.strategies import tuples, just, integers
 
@@ -72,5 +71,4 @@ class GenQueue(GenericStateMachine):
             assert lib.test_queue_head() == self.comparison[-1].item.value
 
 
-with settings(max_examples=2000):
-    TestQueue = GenQueue.TestCase
+TestQueue = GenQueue.TestCase
