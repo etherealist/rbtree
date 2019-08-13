@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2019 Jean-Louis Fuchs <ganwell@fangorn.ch>
+//
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 struct node_s;
 typedef struct node_s node_t;
 struct node_s {
