@@ -1,15 +1,8 @@
-// SPDX-FileCopyrightText: 2019 Jean-Louis Fuchs <ganwell@fangorn.ch>
-//
-// SPDX-License-Identifier: AGPL-3.0-or-later
-
-// .. image:: https://travis-ci.org/concretecloud/rbtree.svg?branch=master
-//    :target: https://travis-ci.org/concretecloud/rbtree/
-//
 // ==================
 // Red-Black Tree 0.8
 // ==================
 //
-// * Bonus: `qs.h`_ (Queue / Stack), mpipe_ (message-pack over pipe)
+// * Bonus: `qs.h` (Queue / Stack)
 // * Textbook implementation
 // * Extensive tests
 // * Has parent pointers and therefore faster delete_node and constant time
@@ -18,17 +11,12 @@
 // * Readable
 // * Generic
 // * C99
-// * Easy to use, a bit complex to extend because it is generic [1]_
+// * Easy to use, a bit complex to extend because it is generic
 // * By Jean-Louis Fuchs <ganwell@fangorn.ch>
 // * Based on Introduction To Algorithms
 // * Text review by Eva Fuchs
 // * Code review by Oliver Sauder @sliverc
 // * Thanks a lot to both
-//
-// .. [1] My rgc preprocessor and make MACRO_DEBUG=True are very helpful.
-//
-// .. _`qs.h`: https://github.com/concretecloud/rbtree/blob/master/qs.rst
-// .. _mpipe: https://github.com/concretecloud/rbtree/blob/master/mpipe.rst
 //
 // Installation
 // ============
@@ -69,50 +57,19 @@
 //
 // * Remove non-ascii chars from source
 //
-// Development
-// ===========
-//
-// Developed on github_
-//
-// .. _github: https://github.com/concretecloud/rbtree
-//
 // Requirements
 // ------------
 //
-// * gcc or clang
-// * pytest
-// * hypothesis
-// * u-msgpack-python
-// * cffi
-// * rst2html
-//
-// Build and test
-// --------------
-//
-// .. code-block:: bash
-//
-//    make
-//
-// Debug macros
-// ------------
-//
-// .. code-block:: bash
-//
-//    make clean all MACRO_DEBUG=True
-//
-// This will expand the macros into .c files, so gdb can step into them.
-//
+// * C99, eg. gcc or clang
+// 
 // Usage
 // =====
 //
 // Getting started
 // ---------------
 //
-// The example is on github: example_h_, example_c_
-//
-// .. _example_h: https://github.com/concretecloud/rbtree/blob/master/src/example.h
-// .. _example_c: https://github.com/concretecloud/rbtree/blob/master/src/example.c
-//
+// The example is on github: example.h, example.c
+// 
 // First we have to define the struct we use in the red-black tree
 // (example.h).
 //
@@ -211,8 +168,8 @@
 //        bk_insert(&tree, book);
 //    }
 //
-// Note that we pass a double pointer to bk_insert, since it might need to change
-// the root node.
+// Note that we pass a double pointer to bk_insert, since it might need to
+// change the root node.
 //
 // Or we can lookup a book:
 //
@@ -296,7 +253,8 @@
 //    Initialize *tree* by assigning *cx##_nil_ptr* to it.
 //
 // cx##_node_init(type* node)
-//    Initialize *node* by initializing the color, parent, left and right fields.
+//    Initialize *node* by initializing the color, parent, left and right
+//    fields.
 //
 // cx##_insert(type** tree, type* node)
 //    Insert *node* into *tree*. If a node with the same key exists the
@@ -420,54 +378,13 @@
 //           my_nil_ptr
 //       ); // Instead of my_tree_init in the bound functions
 //
-// Questions
-// =========
-//
-// Why don't you just generate typed functions from the beginning?
-//    I want to be able to reuse and compose my code. Especially for
-//    composability I need access to the generic functions.
-//
-// Why is the iterator so complicated?
-//    rbtree may become part of a larger set of data-structures, some need more
-//    complicated iterator setups, to make the data-structures interchangeable,
-//    all have to follow the iterator protocol. Use rb_for_m.
-//
-// Why yet another red-black tree?
-//    I often joke that C programmers will reimplement every thing till it
-//    perfectly fits their use-case/payload. I need the replace_node function
-//    in my project. I found no way to avoid creating rbtree. sglib is the only
-//    generic red-black tree implementation I know of and it has no parent
-//    pointers, which makes replace_node impossible.
-//
 // Performance
 // ===========
 //
 // I compare with sglib_, because it is the best and greatest I know. Kudos to
-// Marian Vittek.
+// Marian Vittek. rbtree has similar performance.
 //
 // .. _sglib: http://sglib.sourceforge.net/
-//
-// .. image:: https://github.com/concretecloud/rbtree/raw/master/perf_insert.png
-//    :width: 90%
-//    :align: center
-//    :alt: insert
-//
-// .. image:: https://github.com/concretecloud/rbtree/raw/master/perf_delete.png
-//    :width: 90%
-//    :align: center
-//    :alt: delete
-//
-// sglib has no delete_node. For many applications, a delete_node and a
-// replace_node function is handy, since the application already has the right
-// node to delete or replace.
-//
-// .. image:: https://github.com/concretecloud/rbtree/raw/master/perf_replace.png
-//    :width: 90%
-//    :align: center
-//    :alt: replace
-//
-// Because we have parent pointer we can implement replace_node in constant
-// time O(1). With sglib we have to add/remove for a replacement.
 //
 // Code size
 // =========
@@ -495,37 +412,6 @@
 // Also _rb_rotate_left_m could be bound and called by delete and insert. But
 // in my opinion 2100 bytes is small.
 //
-// Lessons learned
-// ===============
-//
-// I thought I don't have to understand the red-black trees and could simply
-// adjust an existing implementation. I chose poorly and the thing was
-// inherently broken. I wasted a lot of time on it. They replaced the nil
-// pointer with NULL and it resulted in a tree that works, but is not balanced.
-// So my check_tree function failed and I tried to fix that implementation. It
-// turns out bottom-up-fixups are very difficult to implement with NULL
-// pointers. So after many hours wasted I just read Introductions to Algorithms
-// and fixed my implementation.
-//
-// I thought I could adapt this code easily to make a persistent data-structure,
-// but I found it is more important to have the parent pointers and therefore
-// keep complexity at bay. If I am going to implement any persistent
-// data-structures, I am going to build the persistent vector as used in closure
-// and then convert the red-black tree to use vector-indexes and make it
-// persistent on top of the persistent vector. It seems like the persistent
-// vector can be built using reference-counting: pyrsistent_, so it should be
-// possible.
-//
-// With the right mindset, generic and composable programming in C is awesome.
-// Well, you need to expand the macros to debug. The following command will do
-// that:
-//
-// .. code-block:: bash
-//
-//    $CC $CFLAGS -E -P infile.c | clang-format > outfile.c
-//
-// .. _pyrsistent: https://github.com/tobgu/pyrsistent/blob/master/pvectorcmodule.c
-//
 // Implementation
 // ==============
 //
@@ -535,8 +421,10 @@
 // .. _official: https://mitpress.mit.edu/books/introduction-algorithms
 // .. _wiki: https://en.wikipedia.org/wiki/Introduction_to_Algorithms
 // .. _web: http://staff.ustc.edu.cn/~csli/graduate/algorithms/book6/chap14.htm
-// .. _pdf: http://www.realtechsupport.org/UB/SR/algorithms/Cormen_Algorithms_3rd.pdf
-// .. _archive: https://archive.org/details/IntroductionToAlgorithms3edCorman_201508
+// .. _pdf:
+// http://www.realtechsupport.org/UB/SR/algorithms/Cormen_Algorithms_3rd.pdf
+// .. _archive:
+// https://archive.org/details/IntroductionToAlgorithms3edCorman_201508
 //
 // Properties
 // ----------
@@ -568,10 +456,10 @@
 #define rb_tree_h
 #include <assert.h>
 #ifndef RB_SIZE_T
-#   define RB_SIZE_T int
+#define RB_SIZE_T int
 #endif
 #ifdef NDEBUG
-#   define RB_NO_CHECK
+#define RB_NO_CHECK
 #endif
 //
 // Basic traits
@@ -597,11 +485,10 @@
 //
 // .. code-block:: cpp
 //
-#define rb_new_context_m(cx, type) \
-    typedef type cx##_type_t; \
-    typedef type cx##_iter_t; \
-    extern cx##_type_t* const cx##_nil_ptr; \
-
+#define rb_new_context_m(cx, type)                                             \
+    typedef type              cx##_type_t;                                     \
+    typedef type              cx##_iter_t;                                     \
+    extern cx##_type_t* const cx##_nil_ptr;
 
 // Comparators
 // ===========
@@ -618,8 +505,7 @@
 //
 // .. code-block:: cpp
 //
-#define rb_safe_cmp_m(x, y) \
-    (((x)>(y) ? 1 : ((x)<(y) ? -1 : 0))) \
+#define rb_safe_cmp_m(x, y) (((x) > (y) ? 1 : ((x) < (y) ? -1 : 0)))
 
 //
 // rb_pointer_cmp_m
@@ -632,9 +518,7 @@
 //
 // .. code-block:: cpp
 //
-#define rb_pointer_cmp_m(x, y) \
-    rb_safe_cmp_m(x, y) \
-
+#define rb_pointer_cmp_m(x, y) rb_safe_cmp_m(x, y)
 
 // rb_safe_value_cmp_m
 // --------------------
@@ -646,9 +530,7 @@
 //
 // .. code-block:: cpp
 //
-#define rb_safe_value_cmp_m(x, y) \
-    rb_safe_cmp_m(rb_value_m(x), rb_value_m(y)) \
-
+#define rb_safe_value_cmp_m(x, y) rb_safe_cmp_m(rb_value_m(x), rb_value_m(y))
 
 // rb_value_cmp_m
 // ---------------
@@ -661,9 +543,7 @@
 //
 // .. code-block:: cpp
 //
-#define rb_value_cmp_m(x, y) \
-    (rb_value_m(x) - rb_value_m(y)) \
-
+#define rb_value_cmp_m(x, y) (rb_value_m(x) - rb_value_m(y))
 
 // Colors
 // ======
@@ -673,13 +553,13 @@
 // .. code-block:: cpp
 //
 #define RB_BLACK 0
-#define RB_RED   1
+#define RB_RED 1
 
-#define rb_is_black_m(x)   (x == RB_BLACK)
-#define rb_is_red_m(x)     (x == RB_RED)
+#define rb_is_black_m(x) (x == RB_BLACK)
+#define rb_is_red_m(x) (x == RB_RED)
 
 #define rb_make_black_m(x) x = RB_BLACK
-#define rb_make_red_m(x)   x = RB_RED
+#define rb_make_red_m(x) x = RB_RED
 
 // API
 // ===
@@ -720,21 +600,13 @@
 //
 // .. code-block:: cpp
 //
-#define rb_node_init_m( \
-        nil, \
-        color, \
-        parent, \
-        left, \
-        right, \
-        node \
-) \
-{ \
-    color(node) = RB_BLACK; \
-    parent(node) = nil; \
-    left(node) = nil; \
-    right(node) = nil; \
-} \
-
+#define rb_node_init_m(nil, color, parent, left, right, node)                  \
+    {                                                                          \
+        color(node)  = RB_BLACK;                                               \
+        parent(node) = nil;                                                    \
+        left(node)   = nil;                                                    \
+        right(node)  = nil;                                                    \
+    }
 
 // rb_for_m
 // --------
@@ -749,13 +621,9 @@
 //
 // .. code-block:: cpp
 //
-#define rb_for_m(cx, tree, iter, elem) \
-    for( \
-            cx##_iter_init(tree, &iter, &elem); \
-            elem != NULL; \
-            cx##_iter_next(iter, &elem) \
-    ) \
-
+#define rb_for_m(cx, tree, iter, elem)                                         \
+    for (cx##_iter_init(tree, &iter, &elem); elem != NULL;                     \
+         cx##_iter_next(iter, &elem))
 
 // rb_iter_decl_m
 // ---------------
@@ -772,15 +640,13 @@
 //
 // .. code-block:: cpp
 //
-#define rb_iter_decl_m(type, iter, elem) \
-    type* iter = NULL; \
-    type* elem = NULL; \
+#define rb_iter_decl_m(type, iter, elem)                                       \
+    type* iter = NULL;                                                         \
+    type* elem = NULL;
 
-
-#define rb_iter_decl_cx_m(cx, iter, elem) \
-    cx##_type_t* iter = NULL; \
-    cx##_type_t* elem = NULL; \
-
+#define rb_iter_decl_cx_m(cx, iter, elem)                                      \
+    cx##_type_t* iter = NULL;                                                  \
+    cx##_type_t* elem = NULL;
 
 // rb_iter_init_m
 // --------------
@@ -801,20 +667,19 @@
 //
 // .. code-block:: cpp
 //
-#define rb_iter_init_m(nil, left, tree, elem) \
-{ \
-    if(tree == nil) { \
-        elem = NULL; \
-    } else { \
-        elem = tree; \
-        while(left(elem) != nil) \
-            elem = left(elem); \
-    } \
-    if(elem == nil) { \
-        elem = NULL; \
-    } \
-} \
-
+#define rb_iter_init_m(nil, left, tree, elem)                                  \
+    {                                                                          \
+        if (tree == nil) {                                                     \
+            elem = NULL;                                                       \
+        } else {                                                               \
+            elem = tree;                                                       \
+            while (left(elem) != nil)                                          \
+                elem = left(elem);                                             \
+        }                                                                      \
+        if (elem == nil) {                                                     \
+            elem = NULL;                                                       \
+        }                                                                      \
+    }
 
 // rb_iter_next_m
 // --------------
@@ -829,59 +694,36 @@
 //
 // .. code-block:: cpp
 //
-#define _rb_iter_next_m( \
-    nil, \
-    parent, \
-    left, \
-    right, \
-    elem, \
-    tmp \
-) \
-do { \
-    tmp = right(elem); \
-    if(tmp != nil) { \
-        elem = tmp; \
-        while(left(elem) != nil) \
-            elem = left(elem); \
-        break; \
-    } \
-    for(;;) { \
-        /* Next would be the root, we are done. */ \
-        if(parent(elem) == nil) { \
-            elem = NULL; \
-            break; \
-        } \
-        tmp = parent(elem); \
-        /* tmp is a left node, therefore it is the next node. */ \
-        if(elem == left(tmp)) { \
-            elem = tmp; \
-            break; \
-        } \
-        elem = tmp; \
-    } \
-} while(0) \
+#define _rb_iter_next_m(nil, parent, left, right, elem, tmp)                   \
+    do {                                                                       \
+        tmp = right(elem);                                                     \
+        if (tmp != nil) {                                                      \
+            elem = tmp;                                                        \
+            while (left(elem) != nil)                                          \
+                elem = left(elem);                                             \
+            break;                                                             \
+        }                                                                      \
+        for (;;) {                                                             \
+            /* Next would be the root, we are done. */                         \
+            if (parent(elem) == nil) {                                         \
+                elem = NULL;                                                   \
+                break;                                                         \
+            }                                                                  \
+            tmp = parent(elem);                                                \
+            /* tmp is a left node, therefore it is the next node. */           \
+            if (elem == left(tmp)) {                                           \
+                elem = tmp;                                                    \
+                break;                                                         \
+            }                                                                  \
+            elem = tmp;                                                        \
+        }                                                                      \
+    } while (0)
 
-
-#define rb_iter_next_m( \
-    nil, \
-    type, \
-    parent, \
-    left, \
-    right, \
-    elem \
-) \
-{ \
-    type* __rb_next_tmp_; \
-    _rb_iter_next_m( \
-        nil, \
-        parent, \
-        left, \
-        right, \
-        elem, \
-        __rb_next_tmp_ \
-    ); \
-} \
-
+#define rb_iter_next_m(nil, type, parent, left, right, elem)                   \
+    {                                                                          \
+        type* __rb_next_tmp_;                                                  \
+        _rb_iter_next_m(nil, parent, left, right, elem, __rb_next_tmp_);       \
+    }
 
 // rb_insert_m
 // ------------
@@ -905,112 +747,84 @@ do { \
 //
 // .. code-block:: cpp
 //
-#define _rb_insert_m( \
-        type, \
-        nil, \
-        color, \
-        parent, \
-        left, \
-        right, \
-        cmp, \
-        tree, \
-        node, \
-        c, /* current */ \
-        p, /* parent */ \
-        r  /* result */ \
-) \
-do { \
-    assert(tree != NULL && "Tree was not initialized"); \
-    assert(node != nil && "Cannot insert nil node"); \
-    assert(node != nil && "Cannot insert nil node"); \
-    assert( \
-        parent(node) == nil && \
-        left(node) == nil && \
-        right(node) == nil && \
-        tree != node && \
-        "Node already used or not initialized" \
-    ); \
-    if(tree == nil) { \
-        tree = node; \
-        rb_make_black_m(color(tree)); \
-        break; \
-    } else { \
-        assert(( \
-            parent(tree) == nil && \
-            rb_is_black_m(color(tree)) \
-        ) && "Tree is not root"); \
-    } \
-    c = tree; \
-    p = NULL; \
-    r = 0; \
-    while(c != nil) { \
-        /* The node is already in the rbtree, we break. */ \
-        r = cmp((c), (node)); \
-        if(r == 0) { \
-            break; \
-        } \
-        p = c; \
-        /* Lesser on the left, greater on the right. */ \
-        c = r > 0 ? left(c) : right(c); \
-    } \
-    /* The node is already in the rbtree, we break. */ \
-    if(c != nil) { \
-        break; \
-    } \
- \
-    parent(node) = p; \
-    rb_make_red_m(color(node)); \
- \
-    if(r > 0) { \
-        left(p) = node; \
-    } else { \
-        right(p) = node; \
-    } \
- \
-    _rb_insert_fix_m( \
-            type, \
-            nil, \
-            color, \
-            parent, \
-            left, \
-            right, \
-            tree, \
-            node \
-    ); \
-} while(0); \
+#define _rb_insert_m(                                                          \
+        type,                                                                  \
+        nil,                                                                   \
+        color,                                                                 \
+        parent,                                                                \
+        left,                                                                  \
+        right,                                                                 \
+        cmp,                                                                   \
+        tree,                                                                  \
+        node,                                                                  \
+        c, /* current */                                                       \
+        p, /* parent */                                                        \
+        r  /* result */                                                        \
+)                                                                              \
+    do {                                                                       \
+        assert(tree != NULL && "Tree was not initialized");                    \
+        assert(node != nil && "Cannot insert nil node");                       \
+        assert(node != nil && "Cannot insert nil node");                       \
+        assert(parent(node) == nil && left(node) == nil &&                     \
+               right(node) == nil && tree != node &&                           \
+               "Node already used or not initialized");                        \
+        if (tree == nil) {                                                     \
+            tree = node;                                                       \
+            rb_make_black_m(color(tree));                                      \
+            break;                                                             \
+        } else {                                                               \
+            assert((parent(tree) == nil && rb_is_black_m(color(tree))) &&      \
+                   "Tree is not root");                                        \
+        }                                                                      \
+        c = tree;                                                              \
+        p = NULL;                                                              \
+        r = 0;                                                                 \
+        while (c != nil) {                                                     \
+            /* The node is already in the rbtree, we break. */                 \
+            r = cmp((c), (node));                                              \
+            if (r == 0) {                                                      \
+                break;                                                         \
+            }                                                                  \
+            p = c;                                                             \
+            /* Lesser on the left, greater on the right. */                    \
+            c = r > 0 ? left(c) : right(c);                                    \
+        }                                                                      \
+        /* The node is already in the rbtree, we break. */                     \
+        if (c != nil) {                                                        \
+            break;                                                             \
+        }                                                                      \
+                                                                               \
+        parent(node) = p;                                                      \
+        rb_make_red_m(color(node));                                            \
+                                                                               \
+        if (r > 0) {                                                           \
+            left(p) = node;                                                    \
+        } else {                                                               \
+            right(p) = node;                                                   \
+        }                                                                      \
+                                                                               \
+        _rb_insert_fix_m(type, nil, color, parent, left, right, tree, node);   \
+    } while (0);
 
-
-#define rb_insert_m( \
-        type, \
-        nil, \
-        color, \
-        parent, \
-        left, \
-        right, \
-        cmp, \
-        tree, \
-        node \
-) \
-{ \
-    type* __rb_ins_current_; \
-    type* __rb_ins_parent_; \
-    int   __rb_ins_result_; \
-    _rb_insert_m( \
-        type, \
-        nil, \
-        color, \
-        parent, \
-        left, \
-        right, \
-        cmp, \
-        tree, \
-        node, \
-        __rb_ins_current_, \
-        __rb_ins_parent_, \
-        __rb_ins_result_ \
-    ) \
-} \
-
+#define rb_insert_m(type, nil, color, parent, left, right, cmp, tree, node)    \
+    {                                                                          \
+        type* __rb_ins_current_;                                               \
+        type* __rb_ins_parent_;                                                \
+        int   __rb_ins_result_;                                                \
+        _rb_insert_m(                                                          \
+                type,                                                          \
+                nil,                                                           \
+                color,                                                         \
+                parent,                                                        \
+                left,                                                          \
+                right,                                                         \
+                cmp,                                                           \
+                tree,                                                          \
+                node,                                                          \
+                __rb_ins_current_,                                             \
+                __rb_ins_parent_,                                              \
+                __rb_ins_result_)                                              \
+    }
 
 // rb_delete_node_m
 // ----------------
@@ -1029,132 +843,99 @@ do { \
 //
 // .. code-block:: cpp
 //
-#define _rb_delete_node_m( \
-        type, \
-        nil, \
-        color, \
-        parent, \
-        left, \
-        right, \
-        tree, \
-        node, \
-        x, \
-        y \
-) \
-{ \
-    assert(tree != NULL && "Tree was not initialized"); \
-    assert(tree != nil && "Cannot remove node from empty tree"); \
-    assert(node != nil && "Cannot delete nil node"); \
-    assert(( \
-        parent(node) != nil || \
-        left(node) != nil || \
-        right(node) != nil || \
-        rb_is_black_m(color(node)) \
-    ) && "Node is not in a tree"); \
-    if(left(node) == nil || right(node) == nil) { \
-        /* This node has at least one nil node, delete is simple. */ \
-        y = node; \
-    } else { \
-        /* We need to find another node for deletion that has only one child. \
-         * This is tree-next. */ \
-        y = right(node); \
-        while(left(y) != nil) { \
-            y = left(y); \
-        } \
-    } \
- \
-    /* If y has a child we have to attach it to the parent. */ \
-    if(left(y) != nil) { \
-        x = left(y); \
-    } else { \
-        x = right(y); \
-    } \
- \
-    /* Remove y from the tree. */ \
-    parent(x) = parent(y); \
-    if(parent(y) != nil) { \
-        if(y == left(parent(y))) { \
-            left(parent(y)) = x; \
-        } else { \
-            right(parent(y)) = x; \
-        } \
-    } else { \
-        tree = x; \
-    } \
- \
-    /* A black node was removed, to fix the problem we pretend to have pushed the \
-     * blackness onto x. Therefore x is double black and violates property 1. */ \
-    if(rb_is_black_m(color(y))) { \
-        _rb_delete_fix_m( \
-                type, \
-                nil, \
-                color, \
-                parent, \
-                left, \
-                right, \
-                tree, \
-                x \
-        ); \
-    } \
- \
-    /* Replace y with the node since we don't control memory. */ \
-    if(node != y) { \
-        if(parent(node) == nil) { \
-            tree = y; \
-            parent(y) = nil; \
-        } else { \
-            if(node == left(parent(node))) { \
-                left(parent(node)) = y; \
-            } else if(node == right(parent(node))) { \
-                right(parent(node)) = y; \
-            } \
-        } \
-        if(left(node) != nil) { \
-            parent(left(node)) = y; \
-        } \
-        if(right(node) != nil) { \
-            parent(right(node)) = y; \
-        } \
-        parent(y) = parent(node); \
-        left(y) = left(node); \
-        right(y) = right(node); \
-        color(y) = color(node); \
-    } \
-    /* Clear the node. */ \
-    parent(node) = nil; \
-    left(node) = nil; \
-    right(node) = nil; \
-    color(node) = RB_BLACK; \
-} \
+#define _rb_delete_node_m(                                                     \
+        type, nil, color, parent, left, right, tree, node, x, y)               \
+    {                                                                          \
+        assert(tree != NULL && "Tree was not initialized");                    \
+        assert(tree != nil && "Cannot remove node from empty tree");           \
+        assert(node != nil && "Cannot delete nil node");                       \
+        assert((parent(node) != nil || left(node) != nil ||                    \
+                right(node) != nil || rb_is_black_m(color(node))) &&           \
+               "Node is not in a tree");                                       \
+        if (left(node) == nil || right(node) == nil) {                         \
+            /* This node has at least one nil node, delete is simple. */       \
+            y = node;                                                          \
+        } else {                                                               \
+            /* We need to find another node for deletion that has only one     \
+             * child. This is tree-next. */                                                         \
+            y = right(node);                                                   \
+            while (left(y) != nil) {                                           \
+                y = left(y);                                                   \
+            }                                                                  \
+        }                                                                      \
+                                                                               \
+        /* If y has a child we have to attach it to the parent. */             \
+        if (left(y) != nil) {                                                  \
+            x = left(y);                                                       \
+        } else {                                                               \
+            x = right(y);                                                      \
+        }                                                                      \
+                                                                               \
+        /* Remove y from the tree. */                                          \
+        parent(x) = parent(y);                                                 \
+        if (parent(y) != nil) {                                                \
+            if (y == left(parent(y))) {                                        \
+                left(parent(y)) = x;                                           \
+            } else {                                                           \
+                right(parent(y)) = x;                                          \
+            }                                                                  \
+        } else {                                                               \
+            tree = x;                                                          \
+        }                                                                      \
+                                                                               \
+        /* A black node was removed, to fix the problem we pretend to have     \
+         * pushed the blackness onto x. Therefore x is double black and                             \
+         * violates property 1. */                                             \
+        if (rb_is_black_m(color(y))) {                                         \
+            _rb_delete_fix_m(type, nil, color, parent, left, right, tree, x);  \
+        }                                                                      \
+                                                                               \
+        /* Replace y with the node since we don't control memory. */           \
+        if (node != y) {                                                       \
+            if (parent(node) == nil) {                                         \
+                tree      = y;                                                 \
+                parent(y) = nil;                                               \
+            } else {                                                           \
+                if (node == left(parent(node))) {                              \
+                    left(parent(node)) = y;                                    \
+                } else if (node == right(parent(node))) {                      \
+                    right(parent(node)) = y;                                   \
+                }                                                              \
+            }                                                                  \
+            if (left(node) != nil) {                                           \
+                parent(left(node)) = y;                                        \
+            }                                                                  \
+            if (right(node) != nil) {                                          \
+                parent(right(node)) = y;                                       \
+            }                                                                  \
+            parent(y) = parent(node);                                          \
+            left(y)   = left(node);                                            \
+            right(y)  = right(node);                                           \
+            color(y)  = color(node);                                           \
+        }                                                                      \
+        /* Clear the node. */                                                  \
+        parent(node) = nil;                                                    \
+        left(node)   = nil;                                                    \
+        right(node)  = nil;                                                    \
+        color(node)  = RB_BLACK;                                               \
+    }
 
-
-#define rb_delete_node_m( \
-        type, \
-        nil, \
-        color, \
-        parent, \
-        left, \
-        right, \
-        tree, \
-        node \
-) \
-{ \
-    type* __rb_del_x_; \
-    type* __rb_del_y_; \
-    _rb_delete_node_m( \
-        type, \
-        nil, \
-        color, \
-        parent, \
-        left, \
-        right, \
-        tree, \
-        node, \
-        __rb_del_x_, \
-        __rb_del_y_ \
-    ) \
-} \
-
+#define rb_delete_node_m(type, nil, color, parent, left, right, tree, node)    \
+    {                                                                          \
+        type* __rb_del_x_;                                                     \
+        type* __rb_del_y_;                                                     \
+        _rb_delete_node_m(                                                     \
+                type,                                                          \
+                nil,                                                           \
+                color,                                                         \
+                parent,                                                        \
+                left,                                                          \
+                right,                                                         \
+                tree,                                                          \
+                node,                                                          \
+                __rb_del_x_,                                                   \
+                __rb_del_y_)                                                   \
+    }
 
 // rb_find_m
 // ---------
@@ -1180,36 +961,24 @@ do { \
 //
 // .. code-block:: cpp
 
-#define rb_find_m( \
-        type, \
-        nil, \
-        color, \
-        parent, \
-        left, \
-        right, \
-        cmp, \
-        tree, \
-        key, \
-        node \
-) \
-{ \
-    assert(tree != NULL && "Tree was not initialized"); \
-    assert(key != nil && "Do not use nil as search key"); \
-    if(tree == nil) { \
-        node = nil; \
-    } else { \
-        node = tree; \
-        int __rb_find_result_ = 1; \
-        while(__rb_find_result_ && node != nil) { \
-            __rb_find_result_  = cmp((node), (key)); \
-            if(__rb_find_result_ == 0) { \
-                break; \
-            } \
-            node = __rb_find_result_ > 0 ? left(node) : right(node); \
-        } \
-    } \
-} \
-
+#define rb_find_m(type, nil, color, parent, left, right, cmp, tree, key, node) \
+    {                                                                          \
+        assert(tree != NULL && "Tree was not initialized");                    \
+        assert(key != nil && "Do not use nil as search key");                  \
+        if (tree == nil) {                                                     \
+            node = nil;                                                        \
+        } else {                                                               \
+            node                  = tree;                                      \
+            int __rb_find_result_ = 1;                                         \
+            while (__rb_find_result_ && node != nil) {                         \
+                __rb_find_result_ = cmp((node), (key));                        \
+                if (__rb_find_result_ == 0) {                                  \
+                    break;                                                     \
+                }                                                              \
+                node = __rb_find_result_ > 0 ? left(node) : right(node);       \
+            }                                                                  \
+        }                                                                      \
+    }
 
 // rb_replace_node_m
 // -----------------
@@ -1235,52 +1004,41 @@ do { \
 //
 // .. code-block:: cpp
 
-#define rb_replace_node_m( \
-        type, \
-        nil, \
-        color, \
-        parent, \
-        left, \
-        right, \
-        cmp, \
-        tree, \
-        old, \
-        new \
-) \
-{ \
-    assert(tree != NULL && "Tree was not initialized"); \
-    assert(tree != nil && "The tree can't be nil"); \
-    assert(old != nil && "The old node can't be nil"); \
-    assert(new != nil && "The new node can't be nil"); \
-    assert(new != old && "The old and new node must differ"); \
-    if(cmp((old), (new)) == 0) { \
-        if(old == tree) { \
-            tree = new; \
-        } else { \
-            if(old == left(parent(old))) { \
-                left(parent(old)) = new; \
-            } else { \
-                right(parent(old)) = new; \
-            } \
-        } \
-        if(left(old) != nil) { \
-            parent(left(old)) = new; \
-        } \
-        if(right(old) != nil) { \
-            parent(right(old)) = new; \
-        } \
-        parent(new) = parent(old); \
-        left(new) = left(old); \
-        right(new) = right(old); \
-        color(new) = color(old); \
-        /* Clear the old node. */ \
-        parent(old) = nil; \
-        left(old) = nil; \
-        right(old) = nil; \
-        color(old) = RB_BLACK; \
-    } \
-} \
-
+#define rb_replace_node_m(                                                     \
+        type, nil, color, parent, left, right, cmp, tree, old, new)            \
+    {                                                                          \
+        assert(tree != NULL && "Tree was not initialized");                    \
+        assert(tree != nil && "The tree can't be nil");                        \
+        assert(old != nil && "The old node can't be nil");                     \
+        assert(new != nil && "The new node can't be nil");                     \
+        assert(new != old && "The old and new node must differ");              \
+        if (cmp((old), (new)) == 0) {                                          \
+            if (old == tree) {                                                 \
+                tree = new;                                                    \
+            } else {                                                           \
+                if (old == left(parent(old))) {                                \
+                    left(parent(old)) = new;                                   \
+                } else {                                                       \
+                    right(parent(old)) = new;                                  \
+                }                                                              \
+            }                                                                  \
+            if (left(old) != nil) {                                            \
+                parent(left(old)) = new;                                       \
+            }                                                                  \
+            if (right(old) != nil) {                                           \
+                parent(right(old)) = new;                                      \
+            }                                                                  \
+            parent(new) = parent(old);                                         \
+            left(new)   = left(old);                                           \
+            right(new)  = right(old);                                          \
+            color(new)  = color(old);                                          \
+            /* Clear the old node. */                                          \
+            parent(old) = nil;                                                 \
+            left(old)   = nil;                                                 \
+            right(old)  = nil;                                                 \
+            color(old)  = RB_BLACK;                                            \
+        }                                                                      \
+    }
 
 // rb_bind_decl_m
 // --------------
@@ -1297,81 +1055,28 @@ do { \
 //
 // .. code-block:: cpp
 //
-#define rb_bind_decl_cx_m(cx, type) \
-    rb_new_context_m(cx, type) \
-    void \
-    cx##_tree_init( \
-            type** tree \
-    ); \
-    void \
-    cx##_iter_init( \
-            type* tree, \
-            cx##_iter_t** iter, \
-            type** elem \
-    ); \
-    void \
-    cx##_iter_next( \
-            cx##_iter_t* iter, \
-            type** elem \
-    ); \
-    void \
-    cx##_node_init( \
-            type* node \
-    ); \
-    int \
-    cx##_insert( \
-            type** tree, \
-            type* node \
-    ); \
-    void \
-    cx##_delete_node( \
-            type** tree, \
-            type* node \
-    ); \
-    int \
-    cx##_delete( \
-            type** tree, \
-            type* key, \
-            type** node \
-    ); \
-    int \
-    cx##_replace_node( \
-            type** tree, \
-            type* old, \
-            type* new \
-    ); \
-    int \
-    cx##_replace( \
-            type** tree, \
-            type* key, \
-            type* new, \
-            type** old \
-    ); \
-    int \
-    cx##_find( \
-            type* tree, \
-            type* key, \
-            type** node \
-    ); \
-    RB_SIZE_T \
-    cx##_size( \
-            type* tree \
-    ); \
-    rb_bind_decl_debug_cx_m(cx, type) \
+#define rb_bind_decl_cx_m(cx, type)                                            \
+    rb_new_context_m(cx, type) void cx##_tree_init(type** tree);               \
+    void cx##_iter_init(type* tree, cx##_iter_t** iter, type** elem);          \
+    void cx##_iter_next(cx##_iter_t* iter, type** elem);                       \
+    void cx##_node_init(type* node);                                           \
+    int  cx##_insert(type** tree, type* node);                                 \
+    void cx##_delete_node(type** tree, type* node);                            \
+    int  cx##_delete(type** tree, type* key, type** node);                     \
+    int  cx##_replace_node(type** tree, type* old, type* new);                 \
+    int  cx##_replace(type** tree, type* key, type* new, type** old);          \
+    int  cx##_find(type* tree, type* key, type** node);                        \
+    RB_SIZE_T                                                                  \
+    cx##_size(type* tree);                                                     \
+    rb_bind_decl_debug_cx_m(cx, type)
 
 #ifndef RB_NO_CHECK
-#define rb_bind_decl_debug_cx_m(cx, type) \
-    void \
-    cx##_check_tree(type* tree); \
-    void \
-    cx##_check_tree_rec( \
-            type* node, \
-            int depth, \
-            int *pathdepth \
-    ); \
+#define rb_bind_decl_debug_cx_m(cx, type)                                      \
+    void cx##_check_tree(type* tree);                                          \
+    void cx##_check_tree_rec(type* node, int depth, int* pathdepth);
 
 #else
-#   define rb_bind_decl_debug_cx_m(cx, type)
+#define rb_bind_decl_debug_cx_m(cx, type)
 #endif
 #define rb_bind_decl_m(cx, type) rb_bind_decl_cx_m(cx, type)
 
@@ -1392,292 +1097,154 @@ do { \
 //
 // .. code-block:: cpp
 //
-#define _rb_bind_impl_tr_m( \
-        cx, \
-        type, \
-        color, \
-        parent, \
-        left, \
-        right, \
-        cmp \
-) \
-    cx##_type_t cx##_nil_mem; \
-    cx##_type_t* const cx##_nil_ptr = &cx##_nil_mem; \
-    void \
-    cx##_tree_init( \
-            type** tree \
-    ) \
-    { \
-        rb_node_init_m( \
-                cx##_nil_ptr, \
-                color, \
-                parent, \
-                left, \
-                right, \
-                cx##_nil_ptr \
-        ); \
-        *tree = cx##_nil_ptr; \
-    } \
-    void \
-    cx##_iter_init( \
-            type* tree, \
-            cx##_iter_t** iter, \
-            type** elem \
-    ) \
-    { \
-        (void)(iter); \
-        rb_iter_init_m( \
-            cx##_nil_ptr, \
-            left, \
-            tree, \
-            *elem \
-        ); \
-    } \
-    void \
-    cx##_iter_next( \
-            cx##_iter_t* iter, \
-            type** elem \
-    ) \
-    { \
-        (void)(iter); \
-        rb_iter_next_m( \
-            cx##_nil_ptr, \
-            type, \
-            parent, \
-            left, \
-            right, \
-            *elem \
-        ) \
-    } \
-    void \
-    cx##_node_init( \
-            type* node \
-    ) \
-    { \
-        rb_node_init_m( \
-                cx##_nil_ptr, \
-                color, \
-                parent, \
-                left, \
-                right, \
-                node \
-        ); \
-    } \
-    int \
-    cx##_insert( \
-            type** tree, \
-            type* node \
-    ) \
-    { \
-        rb_insert_m( \
-            type, \
-            cx##_nil_ptr, \
-            color, \
-            parent, \
-            left, \
-            right, \
-            cmp, \
-            *tree, \
-            node \
-        ); \
-        return !( \
-            parent(node) != cx##_nil_ptr || \
-            left(node) != cx##_nil_ptr || \
-            right(node) != cx##_nil_ptr || \
-            *tree == node \
-        ); \
-    } \
-    void \
-    cx##_delete_node( \
-            type** tree, \
-            type* node \
-    ) rb_delete_node_m( \
-        type, \
-        cx##_nil_ptr, \
-        color, \
-        parent, \
-        left, \
-        right, \
-        *tree, \
-        node \
-    ) \
-    int \
-    cx##_delete( \
-            type** tree, \
-            type* key, \
-            type** node \
-    ) \
-    { \
-        if(cx##_find(*tree, key, node) == 0) { \
-            cx##_delete_node(tree, *node); \
-            return 0; \
-        } \
-        return 1; \
-    } \
-    int \
-    cx##_replace_node( \
-            type** tree, \
-            type* old, \
-            type* new \
-    ) \
-    { \
-        rb_replace_node_m( \
-            type, \
-            cx##_nil_ptr, \
-            color, \
-            parent, \
-            left, \
-            right, \
-            cmp, \
-            *tree, \
-            old, \
-            new \
-        ); \
-        return !( \
-            parent(old) == cx##_nil_ptr && \
-            left(old) == cx##_nil_ptr && \
-            right(old) == cx##_nil_ptr && \
-            old != *tree \
-        ); \
-    } \
-    int \
-    cx##_replace( \
-            type** tree, \
-            type* key, \
-            type* new, \
-            type** old \
-    ) \
-    { \
-        if(cx##_find(*tree, key, old) == 0) { \
-            return cx##_replace_node(tree, *old, new); \
-        } \
-        return 1; \
-    } \
-    int \
-    cx##_find( \
-            type* tree, \
-            type* key, \
-            type** node \
-    ) \
-    { \
-        rb_find_m( \
-            type, \
-            cx##_nil_ptr, \
-            color, \
-            parent, \
-            left, \
-            right, \
-            cmp, \
-            tree, \
-            key, \
-            *node \
-        ); \
-        return *node == cx##_nil_ptr; \
-    } \
-    RB_SIZE_T \
-    cx##_size( \
-            type* tree \
-    ) \
-    { \
-        if(tree == cx##_nil_ptr) { \
-            return 0; \
-        } else { \
-            return ( \
-                cx##_size(left(tree)) + \
-                cx##_size(right(tree)) + 1 \
-            ); \
-        } \
-    } \
-    _rb_bind_impl_debug_tr_m( \
-            cx, \
-            type, \
-            color, \
-            parent, \
-            left, \
-            right, \
-            cmp \
-    ) \
+#define _rb_bind_impl_tr_m(cx, type, color, parent, left, right, cmp)          \
+    cx##_type_t        cx##_nil_mem;                                           \
+    cx##_type_t* const cx##_nil_ptr = &cx##_nil_mem;                           \
+    void               cx##_tree_init(type** tree)                             \
+    {                                                                          \
+        rb_node_init_m(                                                        \
+                cx##_nil_ptr, color, parent, left, right, cx##_nil_ptr);       \
+        *tree = cx##_nil_ptr;                                                  \
+    }                                                                          \
+    void cx##_iter_init(type* tree, cx##_iter_t** iter, type** elem)           \
+    {                                                                          \
+        (void) (iter);                                                         \
+        rb_iter_init_m(cx##_nil_ptr, left, tree, *elem);                       \
+    }                                                                          \
+    void cx##_iter_next(cx##_iter_t* iter, type** elem)                        \
+    {                                                                          \
+        (void) (iter);                                                         \
+        rb_iter_next_m(cx##_nil_ptr, type, parent, left, right, *elem)         \
+    }                                                                          \
+    void cx##_node_init(type* node)                                            \
+    {                                                                          \
+        rb_node_init_m(cx##_nil_ptr, color, parent, left, right, node);        \
+    }                                                                          \
+    int cx##_insert(type** tree, type* node)                                   \
+    {                                                                          \
+        rb_insert_m(                                                           \
+                type,                                                          \
+                cx##_nil_ptr,                                                  \
+                color,                                                         \
+                parent,                                                        \
+                left,                                                          \
+                right,                                                         \
+                cmp,                                                           \
+                *tree,                                                         \
+                node);                                                         \
+        return !(                                                              \
+                parent(node) != cx##_nil_ptr || left(node) != cx##_nil_ptr ||  \
+                right(node) != cx##_nil_ptr || *tree == node);                 \
+    }                                                                          \
+    void cx##_delete_node(type** tree, type* node) rb_delete_node_m(           \
+            type, cx##_nil_ptr, color, parent, left, right, *tree, node) int   \
+            cx##_delete(type** tree, type* key, type** node)                   \
+    {                                                                          \
+        if (cx##_find(*tree, key, node) == 0) {                                \
+            cx##_delete_node(tree, *node);                                     \
+            return 0;                                                          \
+        }                                                                      \
+        return 1;                                                              \
+    }                                                                          \
+    int cx##_replace_node(type** tree, type* old, type* new)                   \
+    {                                                                          \
+        rb_replace_node_m(                                                     \
+                type,                                                          \
+                cx##_nil_ptr,                                                  \
+                color,                                                         \
+                parent,                                                        \
+                left,                                                          \
+                right,                                                         \
+                cmp,                                                           \
+                *tree,                                                         \
+                old,                                                           \
+                new);                                                          \
+        return !(                                                              \
+                parent(old) == cx##_nil_ptr && left(old) == cx##_nil_ptr &&    \
+                right(old) == cx##_nil_ptr && old != *tree);                   \
+    }                                                                          \
+    int cx##_replace(type** tree, type* key, type* new, type** old)            \
+    {                                                                          \
+        if (cx##_find(*tree, key, old) == 0) {                                 \
+            return cx##_replace_node(tree, *old, new);                         \
+        }                                                                      \
+        return 1;                                                              \
+    }                                                                          \
+    int cx##_find(type* tree, type* key, type** node)                          \
+    {                                                                          \
+        rb_find_m(                                                             \
+                type,                                                          \
+                cx##_nil_ptr,                                                  \
+                color,                                                         \
+                parent,                                                        \
+                left,                                                          \
+                right,                                                         \
+                cmp,                                                           \
+                tree,                                                          \
+                key,                                                           \
+                *node);                                                        \
+        return *node == cx##_nil_ptr;                                          \
+    }                                                                          \
+    RB_SIZE_T                                                                  \
+    cx##_size(type* tree)                                                      \
+    {                                                                          \
+        if (tree == cx##_nil_ptr) {                                            \
+            return 0;                                                          \
+        } else {                                                               \
+            return (cx##_size(left(tree)) + cx##_size(right(tree)) + 1);       \
+        }                                                                      \
+    }                                                                          \
+    _rb_bind_impl_debug_tr_m(cx, type, color, parent, left, right, cmp)
 
 #ifndef RB_NO_CHECK
-#define _rb_bind_impl_debug_tr_m( \
-        cx, \
-        type, \
-        color, \
-        parent, \
-        left, \
-        right, \
-        cmp \
-) \
-    void \
-    cx##_check_tree(type* tree) \
-    { \
-        int pathdepth = -1; \
-        cx##_check_tree_rec(tree, 0, &pathdepth); \
-    } \
-    void \
-    cx##_check_tree_rec( \
-            type* node, \
-            int depth, \
-            int *pathdepth \
-    ) rb_check_tree_m( \
-        cx, \
-        type, \
-        color, \
-        parent, \
-        left, \
-        right, \
-        cmp, \
-        node, \
-        depth, \
-        *pathdepth \
-    ) \
+#define _rb_bind_impl_debug_tr_m(cx, type, color, parent, left, right, cmp)    \
+    void cx##_check_tree(type* tree)                                           \
+    {                                                                          \
+        int pathdepth = -1;                                                    \
+        cx##_check_tree_rec(tree, 0, &pathdepth);                              \
+    }                                                                          \
+    void cx##_check_tree_rec(type* node, int depth, int* pathdepth)            \
+            rb_check_tree_m(                                                   \
+                    cx,                                                        \
+                    type,                                                      \
+                    color,                                                     \
+                    parent,                                                    \
+                    left,                                                      \
+                    right,                                                     \
+                    cmp,                                                       \
+                    node,                                                      \
+                    depth,                                                     \
+                    *pathdepth)
 
 #else
-#define _rb_bind_impl_debug_tr_m( \
-        cx, \
-        type, \
-        color, \
-        parent, \
-        left, \
-        right, \
-        cmp \
-) \
+#define _rb_bind_impl_debug_tr_m(cx, type, color, parent, left, right, cmp)
 
 #endif
 
-#define rb_bind_impl_cx_m(cx, type) \
-    _rb_bind_impl_tr_m( \
-        cx, \
-        type, \
-        cx##_color_m, \
-        cx##_parent_m, \
-        cx##_left_m, \
-        cx##_right_m, \
-        cx##_cmp_m \
-    ) \
+#define rb_bind_impl_cx_m(cx, type)                                            \
+    _rb_bind_impl_tr_m(                                                        \
+            cx,                                                                \
+            type,                                                              \
+            cx##_color_m,                                                      \
+            cx##_parent_m,                                                     \
+            cx##_left_m,                                                       \
+            cx##_right_m,                                                      \
+            cx##_cmp_m)
 
+#define rb_bind_impl_m(cx, type)                                               \
+    _rb_bind_impl_tr_m(                                                        \
+            cx,                                                                \
+            type,                                                              \
+            rb_color_m,                                                        \
+            rb_parent_m,                                                       \
+            rb_left_m,                                                         \
+            rb_right_m,                                                        \
+            cx##_cmp_m)
 
-#define rb_bind_impl_m(cx, type) \
-    _rb_bind_impl_tr_m( \
-        cx, \
-        type, \
-        rb_color_m, \
-        rb_parent_m, \
-        rb_left_m, \
-        rb_right_m, \
-        cx##_cmp_m \
-    ) \
+#define rb_bind_cx_m(cx, type)                                                 \
+    rb_bind_decl_cx_m(cx, type) rb_bind_impl_cx_m(cx, type)
 
-
-#define rb_bind_cx_m(cx, type) \
-    rb_bind_decl_cx_m(cx, type) \
-    rb_bind_impl_cx_m(cx, type) \
-
-
-#define rb_bind_m(cx, type) \
-    rb_bind_decl_m(cx, type) \
-    rb_bind_impl_m(cx, type) \
-
+#define rb_bind_m(cx, type) rb_bind_decl_m(cx, type) rb_bind_impl_m(cx, type)
 
 // rb_check_tree_m
 // ----------------
@@ -1694,85 +1261,72 @@ do { \
 //
 // .. code-block:: cpp
 //
-#define _rb_check_tree_m( \
-        cx, \
-        type, \
-        color, \
-        parent, \
-        left, \
-        right, \
-        cmp, \
-        node, \
-        depth, \
-        pathdepth, \
-        tmp \
-) \
-{ \
-    type* nil = cx##_nil_ptr; \
-    if(node == nil) { \
-        if(pathdepth < 0) { \
-            pathdepth = depth; \
-        } else { \
-            assert(pathdepth == depth); \
-        } \
-    } else { \
-        tmp = left(node); \
-        if(tmp != nil) { \
-            assert(parent(tmp) == node); \
-            assert(cmp((tmp), (node)) < 0); \
-        } \
-        tmp = right(node); \
-        if(tmp != nil) { \
-            assert(parent(tmp) == node); \
-            assert(cmp((tmp), (node)) > 0); \
-        } \
-        if(rb_is_red_m(color(node))) { \
-            tmp = left(node); \
-            if(tmp != nil) { \
-                assert(rb_is_black_m(color(tmp))); \
-            } \
-            tmp = right(node); \
-            if(tmp != nil) { \
-                assert(rb_is_black_m(color(tmp))); \
-            } \
-            cx##_check_tree_rec(left(node), depth, &pathdepth); \
-            cx##_check_tree_rec(right(node), depth, &pathdepth); \
-        } else { \
-            cx##_check_tree_rec(left(node), depth + 1, &pathdepth); \
-            cx##_check_tree_rec(right(node), depth + 1, &pathdepth); \
-        } \
-    } \
-} \
+#define _rb_check_tree_m(                                                      \
+        cx,                                                                    \
+        type,                                                                  \
+        color,                                                                 \
+        parent,                                                                \
+        left,                                                                  \
+        right,                                                                 \
+        cmp,                                                                   \
+        node,                                                                  \
+        depth,                                                                 \
+        pathdepth,                                                             \
+        tmp)                                                                   \
+    {                                                                          \
+        type* nil = cx##_nil_ptr;                                              \
+        if (node == nil) {                                                     \
+            if (pathdepth < 0) {                                               \
+                pathdepth = depth;                                             \
+            } else {                                                           \
+                assert(pathdepth == depth);                                    \
+            }                                                                  \
+        } else {                                                               \
+            tmp = left(node);                                                  \
+            if (tmp != nil) {                                                  \
+                assert(parent(tmp) == node);                                   \
+                assert(cmp((tmp), (node)) < 0);                                \
+            }                                                                  \
+            tmp = right(node);                                                 \
+            if (tmp != nil) {                                                  \
+                assert(parent(tmp) == node);                                   \
+                assert(cmp((tmp), (node)) > 0);                                \
+            }                                                                  \
+            if (rb_is_red_m(color(node))) {                                    \
+                tmp = left(node);                                              \
+                if (tmp != nil) {                                              \
+                    assert(rb_is_black_m(color(tmp)));                         \
+                }                                                              \
+                tmp = right(node);                                             \
+                if (tmp != nil) {                                              \
+                    assert(rb_is_black_m(color(tmp)));                         \
+                }                                                              \
+                cx##_check_tree_rec(left(node), depth, &pathdepth);            \
+                cx##_check_tree_rec(right(node), depth, &pathdepth);           \
+            } else {                                                           \
+                cx##_check_tree_rec(left(node), depth + 1, &pathdepth);        \
+                cx##_check_tree_rec(right(node), depth + 1, &pathdepth);       \
+            }                                                                  \
+        }                                                                      \
+    }
 
-#define rb_check_tree_m( \
-        cx, \
-        type, \
-        color, \
-        parent, \
-        left, \
-        right, \
-        cmp, \
-        node, \
-        depth, \
-        pathdepth \
-) \
-{ \
-    type* __rb_check_tmp_; \
-    _rb_check_tree_m( \
-        cx, \
-        type, \
-        color, \
-        parent, \
-        left, \
-        right, \
-        cmp, \
-        node, \
-        depth, \
-        pathdepth, \
-        __rb_check_tmp_ \
-    ) \
-} \
-
+#define rb_check_tree_m(                                                       \
+        cx, type, color, parent, left, right, cmp, node, depth, pathdepth)     \
+    {                                                                          \
+        type* __rb_check_tmp_;                                                 \
+        _rb_check_tree_m(                                                      \
+                cx,                                                            \
+                type,                                                          \
+                color,                                                         \
+                parent,                                                        \
+                left,                                                          \
+                right,                                                         \
+                cmp,                                                           \
+                node,                                                          \
+                depth,                                                         \
+                pathdepth,                                                     \
+                __rb_check_tmp_)                                               \
+    }
 
 // Internal
 // ========
@@ -1813,121 +1367,84 @@ do { \
 //
 // .. code-block:: cpp
 //
-#define __rb_rotate_left_m( \
-        nil, \
-        color, \
-        parent, \
-        left, \
-        right, \
-        tree, \
-        node, \
-        x, \
-        y \
-) \
-{ \
-    x = node; \
-    y = right(x); \
- \
-    /* Turn y's left sub-tree into x's right sub-tree. */ \
-    right(x) = left(y); \
-    if(left(y) != nil) { \
-        parent(left(y)) = x; \
-    } \
-    /* y's new parent was x's parent. */ \
-    parent(y) = parent(x); \
-    if(parent(x) == nil) { \
-        /* If x is root y becomes the new root. */ \
-        tree = y; \
-    } else { \
-        /* Set the parent to point to y instead of x. */ \
-        if(x == left(parent(x))) { \
-            /* x was on the left of its parent. */ \
-            left(parent(x)) = y; \
-        } else { \
-            /* x must have been on the right. */ \
-            right(parent(x)) = y; \
-        } \
-    } \
-    /* Finally, put x on y's left. */ \
-    left(y) = x; \
-    parent(x) = y; \
-} \
+#define __rb_rotate_left_m(nil, color, parent, left, right, tree, node, x, y)  \
+    {                                                                          \
+        x = node;                                                              \
+        y = right(x);                                                          \
+                                                                               \
+        /* Turn y's left sub-tree into x's right sub-tree. */                  \
+        right(x) = left(y);                                                    \
+        if (left(y) != nil) {                                                  \
+            parent(left(y)) = x;                                               \
+        }                                                                      \
+        /* y's new parent was x's parent. */                                   \
+        parent(y) = parent(x);                                                 \
+        if (parent(x) == nil) {                                                \
+            /* If x is root y becomes the new root. */                         \
+            tree = y;                                                          \
+        } else {                                                               \
+            /* Set the parent to point to y instead of x. */                   \
+            if (x == left(parent(x))) {                                        \
+                /* x was on the left of its parent. */                         \
+                left(parent(x)) = y;                                           \
+            } else {                                                           \
+                /* x must have been on the right. */                           \
+                right(parent(x)) = y;                                          \
+            }                                                                  \
+        }                                                                      \
+        /* Finally, put x on y's left. */                                      \
+        left(y)   = x;                                                         \
+        parent(x) = y;                                                         \
+    }
 
+#define _rb_rotate_left_m(type, nil, color, parent, left, right, tree, node)   \
+    {                                                                          \
+        type* __rb_rot_x_;                                                     \
+        type* __rb_rot_y_;                                                     \
+        __rb_rotate_left_m(                                                    \
+                nil,                                                           \
+                color,                                                         \
+                parent,                                                        \
+                left,                                                          \
+                right,                                                         \
+                tree,                                                          \
+                node,                                                          \
+                __rb_rot_x_,                                                   \
+                __rb_rot_y_);                                                  \
+    }
 
-#define _rb_rotate_left_m( \
-        type, \
-        nil, \
-        color, \
-        parent, \
-        left, \
-        right, \
-        tree, \
-        node \
-) \
-{ \
-    type* __rb_rot_x_; \
-    type* __rb_rot_y_; \
-    __rb_rotate_left_m( \
-        nil, \
-        color, \
-        parent, \
-        left, \
-        right, \
-        tree, \
-        node, \
-        __rb_rot_x_, \
-        __rb_rot_y_ \
-    ); \
-} \
+#define _rb_rotate_left_tr_m(cx, tree, node)                                   \
+    _rb_rotate_left_m(                                                         \
+            cx##_type_t,                                                       \
+            cx##_nil_ptr,                                                      \
+            rb_color_m,                                                        \
+            rb_parent_m,                                                       \
+            rb_left_m,                                                         \
+            rb_right_m,                                                        \
+            tree,                                                              \
+            node)
 
+#define _rb_rotate_right_m(type, nil, color, parent, left, right, tree, node)  \
+    _rb_rotate_left_m(                                                         \
+            type,                                                              \
+            nil,                                                               \
+            color,                                                             \
+            parent,                                                            \
+            right, /* Switched */                                              \
+            left,  /* Switched */                                              \
+            tree,                                                              \
+            node)
 
-#define _rb_rotate_left_tr_m(cx, tree, node) \
-    _rb_rotate_left_m( \
-        cx##_type_t, \
-        cx##_nil_ptr, \
-        rb_color_m, \
-        rb_parent_m, \
-        rb_left_m, \
-        rb_right_m, \
-        tree, \
-        node \
-    ) \
-
-
-#define _rb_rotate_right_m( \
-        type, \
-        nil, \
-        color, \
-        parent, \
-        left, \
-        right, \
-        tree, \
-        node \
-) \
-    _rb_rotate_left_m( \
-        type, \
-        nil, \
-        color, \
-        parent, \
-        right, /* Switched */ \
-        left,  /* Switched */ \
-        tree, \
-        node \
-    ) \
-
-
-#define _rb_rotate_right_tr_m(cx, tree, node) \
-    _rb_rotate_right_m( \
-        cx##_type_t, \
-        cx##_nil_ptr, \
-        rb_color_m, \
-        rb_parent_m, \
-        rb_left_m, \
-        rb_right_m, \
-        tree, \
-        node \
-    ) \
-
+#define _rb_rotate_right_tr_m(cx, tree, node)                                  \
+    _rb_rotate_right_m(                                                        \
+            cx##_type_t,                                                       \
+            cx##_nil_ptr,                                                      \
+            rb_color_m,                                                        \
+            rb_parent_m,                                                       \
+            rb_left_m,                                                         \
+            rb_right_m,                                                        \
+            tree,                                                              \
+            node)
 
 // _rb_insert_fix_m
 // ----------------
@@ -1946,142 +1463,103 @@ do { \
 //
 // .. code-block:: cpp
 //
-#define __rb_insert_fix_m( \
-        type, \
-        nil, \
-        color, \
-        parent, \
-        left, \
-        right, \
-        tree, \
-        node, \
-        x, \
-        y \
-) \
-{ \
-    x = node; \
-    /* Move up the tree and fix property 3. */ \
-    while( \
-            (x != tree) && \
-            rb_is_red_m(color(parent(x))) \
-    ) { \
-        if(parent(x) == left(parent(parent(x)))) { \
-            _rb_insert_fix_node_m( \
-                type, \
-                nil, \
-                color, \
-                parent, \
-                left, \
-                right, \
-                _rb_rotate_left_m, \
-                _rb_rotate_right_m, \
-                tree, \
-                x, \
-                y \
-            ); \
-        } else { \
-            _rb_insert_fix_node_m( \
-                type, \
-                nil, \
-                color, \
-                parent, \
-                right, /* Switched */ \
-                left, /* Switched */ \
-                _rb_rotate_left_m, \
-                _rb_rotate_right_m, \
-                tree, \
-                x, \
-                y \
-            ); \
-        } \
-    } \
-    rb_make_black_m(color(tree)); \
-} \
+#define __rb_insert_fix_m(                                                     \
+        type, nil, color, parent, left, right, tree, node, x, y)               \
+    {                                                                          \
+        x = node;                                                              \
+        /* Move up the tree and fix property 3. */                             \
+        while ((x != tree) && rb_is_red_m(color(parent(x)))) {                 \
+            if (parent(x) == left(parent(parent(x)))) {                        \
+                _rb_insert_fix_node_m(                                         \
+                        type,                                                  \
+                        nil,                                                   \
+                        color,                                                 \
+                        parent,                                                \
+                        left,                                                  \
+                        right,                                                 \
+                        _rb_rotate_left_m,                                     \
+                        _rb_rotate_right_m,                                    \
+                        tree,                                                  \
+                        x,                                                     \
+                        y);                                                    \
+            } else {                                                           \
+                _rb_insert_fix_node_m(                                         \
+                        type,                                                  \
+                        nil,                                                   \
+                        color,                                                 \
+                        parent,                                                \
+                        right, /* Switched */                                  \
+                        left,  /* Switched */                                  \
+                        _rb_rotate_left_m,                                     \
+                        _rb_rotate_right_m,                                    \
+                        tree,                                                  \
+                        x,                                                     \
+                        y);                                                    \
+            }                                                                  \
+        }                                                                      \
+        rb_make_black_m(color(tree));                                          \
+    }
 
+#define _rb_insert_fix_m(type, nil, color, parent, left, right, tree, node)    \
+    {                                                                          \
+        type* __rb_insf_x_;                                                    \
+        type* __rb_insf_y_;                                                    \
+        __rb_insert_fix_m(                                                     \
+                type,                                                          \
+                nil,                                                           \
+                color,                                                         \
+                parent,                                                        \
+                left,                                                          \
+                right,                                                         \
+                tree,                                                          \
+                node,                                                          \
+                __rb_insf_x_,                                                  \
+                __rb_insf_y_);                                                 \
+    }
 
-#define _rb_insert_fix_m( \
-        type, \
-        nil, \
-        color, \
-        parent, \
-        left, \
-        right, \
-        tree, \
-        node \
-) \
-{ \
-    type* __rb_insf_x_; \
-    type* __rb_insf_y_; \
-    __rb_insert_fix_m( \
-        type, \
-        nil, \
-        color, \
-        parent, \
-        left, \
-        right, \
-        tree, \
-        node, \
-        __rb_insf_x_, \
-        __rb_insf_y_ \
-    ); \
-} \
-
-
-#define _rb_insert_fix_node_m( \
-        type, \
-        nil, \
-        color, \
-        parent, \
-        left, \
-        right, \
-        rot_left, \
-        rot_right, \
-        tree, \
-        x, \
-        y \
-) \
-{ \
-    y = right(parent(parent(x))); \
-    /* Case 1: z's uncle y is red. */ \
-    if(rb_is_red_m(color(y))) { \
-        rb_make_black_m(color(parent(x))); \
-        rb_make_black_m(color(y)); \
-        rb_make_red_m(color(parent(parent(x)))); \
-        /* Locally property 3 is fixed, but changing the color of the \
-         * grandparent might have created a new violation. We continue with the \
-         * grandparent. */ \
-        x = parent(parent(x)); \
-    } else { \
-        /* Case 2: z's uncle y is black and z is a right child. */ \
-        if(x == right(parent(x))) { \
-            x = parent(x); \
-            rot_left( \
-                type, \
-                nil, \
-                color, \
-                parent, \
-                left, \
-                right, \
-                tree, \
-                x \
-            ); \
-        } \
-        /* Case 3: z's uncle y is black and z is a left child. */ \
-        rb_make_black_m(color(parent(x))); \
-        rb_make_red_m(color(parent(parent(x)))); \
-        rot_right( \
-            type, \
-            nil, \
-            color, \
-            parent, \
-            left, \
-            right, \
-            tree, \
-            parent(parent(x)) \
-        ); \
-    } \
-} \
-
+#define _rb_insert_fix_node_m(                                                 \
+        type,                                                                  \
+        nil,                                                                   \
+        color,                                                                 \
+        parent,                                                                \
+        left,                                                                  \
+        right,                                                                 \
+        rot_left,                                                              \
+        rot_right,                                                             \
+        tree,                                                                  \
+        x,                                                                     \
+        y)                                                                     \
+    {                                                                          \
+        y = right(parent(parent(x)));                                          \
+        /* Case 1: z's uncle y is red. */                                      \
+        if (rb_is_red_m(color(y))) {                                           \
+            rb_make_black_m(color(parent(x)));                                 \
+            rb_make_black_m(color(y));                                         \
+            rb_make_red_m(color(parent(parent(x))));                           \
+            /* Locally property 3 is fixed, but changing the color of the      \
+             * grandparent might have created a new violation. We continue     \
+             * with the grandparent. */                                                               \
+            x = parent(parent(x));                                             \
+        } else {                                                               \
+            /* Case 2: z's uncle y is black and z is a right child. */         \
+            if (x == right(parent(x))) {                                       \
+                x = parent(x);                                                 \
+                rot_left(type, nil, color, parent, left, right, tree, x);      \
+            }                                                                  \
+            /* Case 3: z's uncle y is black and z is a left child. */          \
+            rb_make_black_m(color(parent(x)));                                 \
+            rb_make_red_m(color(parent(parent(x))));                           \
+            rot_right(                                                         \
+                    type,                                                      \
+                    nil,                                                       \
+                    color,                                                     \
+                    parent,                                                    \
+                    left,                                                      \
+                    right,                                                     \
+                    tree,                                                      \
+                    parent(parent(x)));                                        \
+        }                                                                      \
+    }
 
 // _rb_delete_fix_m
 // ----------------
@@ -2099,167 +1577,109 @@ do { \
 //
 // .. code-block:: cpp
 //
-#define __rb_delete_fix_m( \
-        type, \
-        nil, \
-        color, \
-        parent, \
-        left, \
-        right, \
-        tree, \
-        node, \
-        x, \
-        y \
-) \
-{ \
-    x = node; \
-    /* Move up fix extra blackness till x is red. */ \
-    while( \
-            (x != tree) && \
-            rb_is_black_m(color(x)) \
-    ) { \
-        if(x == left(parent(x))) { \
-            _rb_delete_fix_node_m( \
-                type, \
-                nil, \
-                color, \
-                parent, \
-                left, \
-                right, \
-                _rb_rotate_left_m, \
-                _rb_rotate_right_m, \
-                tree, \
-                x, \
-                y \
-            ); \
-        } else { \
-            _rb_delete_fix_node_m( \
-                type, \
-                nil, \
-                color, \
-                parent, \
-                right, /* Switched */ \
-                left, /* Switched */ \
-                _rb_rotate_left_m, \
-                _rb_rotate_right_m, \
-                tree, \
-                x, \
-                y \
-            ); \
-        } \
-    } \
-    /* If x is red we can introduce a real black node. */ \
-    rb_make_black_m(color(x)); \
-} \
+#define __rb_delete_fix_m(                                                     \
+        type, nil, color, parent, left, right, tree, node, x, y)               \
+    {                                                                          \
+        x = node;                                                              \
+        /* Move up fix extra blackness till x is red. */                       \
+        while ((x != tree) && rb_is_black_m(color(x))) {                       \
+            if (x == left(parent(x))) {                                        \
+                _rb_delete_fix_node_m(                                         \
+                        type,                                                  \
+                        nil,                                                   \
+                        color,                                                 \
+                        parent,                                                \
+                        left,                                                  \
+                        right,                                                 \
+                        _rb_rotate_left_m,                                     \
+                        _rb_rotate_right_m,                                    \
+                        tree,                                                  \
+                        x,                                                     \
+                        y);                                                    \
+            } else {                                                           \
+                _rb_delete_fix_node_m(                                         \
+                        type,                                                  \
+                        nil,                                                   \
+                        color,                                                 \
+                        parent,                                                \
+                        right, /* Switched */                                  \
+                        left,  /* Switched */                                  \
+                        _rb_rotate_left_m,                                     \
+                        _rb_rotate_right_m,                                    \
+                        tree,                                                  \
+                        x,                                                     \
+                        y);                                                    \
+            }                                                                  \
+        }                                                                      \
+        /* If x is red we can introduce a real black node. */                  \
+        rb_make_black_m(color(x));                                             \
+    }
 
+#define _rb_delete_fix_m(type, nil, color, parent, left, right, tree, node)    \
+    {                                                                          \
+        type* __rb_delf_x_;                                                    \
+        type* __rb_delf_y_;                                                    \
+        __rb_delete_fix_m(                                                     \
+                type,                                                          \
+                nil,                                                           \
+                color,                                                         \
+                parent,                                                        \
+                left,                                                          \
+                right,                                                         \
+                tree,                                                          \
+                node,                                                          \
+                __rb_delf_x_,                                                  \
+                __rb_delf_y_);                                                 \
+    }
 
-#define _rb_delete_fix_m( \
-        type, \
-        nil, \
-        color, \
-        parent, \
-        left, \
-        right, \
-        tree, \
-        node \
-) \
-{ \
-    type* __rb_delf_x_; \
-    type* __rb_delf_y_; \
-    __rb_delete_fix_m( \
-        type, \
-        nil, \
-        color, \
-        parent, \
-        left, \
-        right, \
-        tree, \
-        node, \
-        __rb_delf_x_, \
-        __rb_delf_y_ \
-    ); \
-} \
-
-
-#define _rb_delete_fix_node_m( \
-        type, \
-        nil, \
-        color, \
-        parent, \
-        left, \
-        right, \
-        rot_left, \
-        rot_right, \
-        tree, \
-        x, \
-        w \
-) \
-{ \
-    /* X is double (extra) black. Goal: introduce a real black node. */ \
-    w = right(parent(x)); \
-    /* Case 1: x's sibling w is red. */ \
-    if(rb_is_red_m(color(w))) { \
-        rb_make_black_m(color(w)); \
-        rb_make_red_m(color(parent(x))); \
-        rot_left( \
-            type, \
-            nil, \
-            color, \
-            parent, \
-            left, \
-            right, \
-            tree, \
-            parent(x) \
-        ); \
-        /* Transforms into case 2, 3 or 4 */ \
-        w = right(parent(x)); \
-    } \
-    if( \
-            rb_is_black_m(color(left(w))) && \
-            rb_is_black_m(color(right(w))) \
-    ) { \
-        /* Case 2: x's sibling w is black, and both of w's children are black. */ \
-        rb_make_red_m(color(w)); \
-        /* Double blackness move up. Reenter loop. */ \
-        x = parent(x); \
-    } else { \
-        /* Case 3: x's sibling w is black, w's left child is red, and w's right \
-         * child is black. */ \
-        if(rb_is_black_m(color(right(w)))) { \
-            rb_make_black_m(color(left(w))); \
-            rb_make_red_m(color(w)); \
-            rot_right( \
-                type, \
-                nil, \
-                color, \
-                parent, \
-                left, \
-                right, \
-                tree, \
-                w \
-            ); \
-            w = right(parent(x)); \
-        } \
-        /* Case 3: x's sibling w is black, w's left child is red, and w's right \
-         * child is black. */ \
-        color(w) = color(parent(x)); \
-        rb_make_black_m(color(parent(x))); \
-        rb_make_black_m(color(right(w))); \
-        rot_left( \
-            type, \
-            nil, \
-            color, \
-            parent, \
-            left, \
-            right, \
-            tree, \
-            parent(x) \
-        ); \
-        /* Terminate the loop. */ \
-        x = tree; \
-    } \
-    /* When the loop ends x is red and will be colored black. */ \
-} \
-
+#define _rb_delete_fix_node_m(                                                 \
+        type,                                                                  \
+        nil,                                                                   \
+        color,                                                                 \
+        parent,                                                                \
+        left,                                                                  \
+        right,                                                                 \
+        rot_left,                                                              \
+        rot_right,                                                             \
+        tree,                                                                  \
+        x,                                                                     \
+        w)                                                                     \
+    {                                                                          \
+        /* X is double (extra) black. Goal: introduce a real black node. */    \
+        w = right(parent(x));                                                  \
+        /* Case 1: x's sibling w is red. */                                    \
+        if (rb_is_red_m(color(w))) {                                           \
+            rb_make_black_m(color(w));                                         \
+            rb_make_red_m(color(parent(x)));                                   \
+            rot_left(type, nil, color, parent, left, right, tree, parent(x));  \
+            /* Transforms into case 2, 3 or 4 */                               \
+            w = right(parent(x));                                              \
+        }                                                                      \
+        if (rb_is_black_m(color(left(w))) && rb_is_black_m(color(right(w)))) { \
+            /* Case 2: x's sibling w is black, and both of w's children are    \
+             * black. */                                                       \
+            rb_make_red_m(color(w));                                           \
+            /* Double blackness move up. Reenter loop. */                      \
+            x = parent(x);                                                     \
+        } else {                                                               \
+            /* Case 3: x's sibling w is black, w's left child is red, and w's  \
+             * right child is black. */                                                            \
+            if (rb_is_black_m(color(right(w)))) {                              \
+                rb_make_black_m(color(left(w)));                               \
+                rb_make_red_m(color(w));                                       \
+                rot_right(type, nil, color, parent, left, right, tree, w);     \
+                w = right(parent(x));                                          \
+            }                                                                  \
+            /* Case 3: x's sibling w is black, w's left child is red, and w's  \
+             * right child is black. */                                                            \
+            color(w) = color(parent(x));                                       \
+            rb_make_black_m(color(parent(x)));                                 \
+            rb_make_black_m(color(right(w)));                                  \
+            rot_left(type, nil, color, parent, left, right, tree, parent(x));  \
+            /* Terminate the loop. */                                          \
+            x = tree;                                                          \
+        }                                                                      \
+        /* When the loop ends x is red and will be colored black. */           \
+    }
 
 #endif // rb_tree_h
