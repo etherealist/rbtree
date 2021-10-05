@@ -12,3 +12,7 @@ crazy ideas I had back then.
 * `rbtree.h` is now a humble red-black tree implementation
 * `qs.h` is a humble queue, stack and ring implementation
 * performance is very well and it should be very readable and good for learning
+
+Should run with C99 and there shouldn't be any bugs, it tested this like crazy.
+If you're curios some of the testing is still in [old_dev](old_dev). The rest of
+the testing went with chirp, chirp is buried on backup somewhere. RIP.
