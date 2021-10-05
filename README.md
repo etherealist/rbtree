@@ -6,7 +6,7 @@ over. Chirp was good too, but I don't go back there anymore, too much damage was
 done.
 
 I had my quite egocentric code-formatting back then. So I run `rbtree.h` and
-`qs.h` through clang format. I also removed all mention of chirp and some other
+`qs.h` through clang-format. I also removed all mention of chirp and some other
 crazy ideas I had back then.
 
 * `rbtree.h` is a humble red-black tree implementation
@@ -22,3 +22,6 @@ Installation
 
 Copy [rbtree.h](rbtree.h) and/or [qs.h](qs.h) to you source. The only
 dependency is assert.h, but you can get rid of that easy if you want.
+
+License is AGPL-3.0-or-later
+----------------------------
