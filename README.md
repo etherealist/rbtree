@@ -13,14 +13,14 @@ crazy ideas I had back then.
 * `qs.h` is a humble queue, stack and ring implementation
 * performance is very well and it should be very readable and good for learning
 
-Should run with C99 and there shouldn't be any bugs, it tested this like crazy.
-If you're curios some of the testing is still in [old_dev](old_dev). The rest of
-the testing went with chirp, chirp is buried on backup somewhere. RIP.
+It runs with C99 and there shouldn't be any bugs, it was tested this like crazy.
+If you're curious - some of the testing is still in [old_dev](old_dev). The rest of
+the testing went with chirp, chirp is buried in backup somewhere. RIP.
 
 Installation
 ------------
 
 Copy [rbtree.h](rbtree.h) and/or [qs.h](qs.h) to you source. The only
-dependency is assert.h, but you can get rid of that easy if you want.
+dependency is assert.h, but you can get rid of that easily if you want.
 
 #### License is AGPL-3.0-or-later
