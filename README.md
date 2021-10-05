@@ -23,5 +23,4 @@ Installation
 Copy [rbtree.h](rbtree.h) and/or [qs.h](qs.h) to you source. The only
 dependency is assert.h, but you can get rid of that easy if you want.
 
-License is AGPL-3.0-or-later
-----------------------------
+#### License is AGPL-3.0-or-later
