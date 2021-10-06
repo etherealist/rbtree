@@ -12,7 +12,7 @@ Red-Black Tree 0.8
 * Generic
 * C99
 * Easy to use, a bit complex to extend because it is generic
-* By Jean-Louis Fuchs <ganwell@fangorn.ch>
+* By Jean-Louis Fuchs <jean-louis.fuchs@adfinis.com>
 * Based on Introduction To Algorithms
 * Text review by Eva Fuchs
 * Code review by Oliver Sauder @sliverc
