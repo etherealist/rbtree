@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Queue / Stack 0.8</title>
+  <style>
+    html {
+      line-height: 1.5;
+      font-family: Georgia, serif;
+      font-size: 20px;
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      word-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 1em;
+      }
+    }
+    @media print {
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, 'Lucida Console', Consolas, monospace;
+      font-size: 85%;
+      margin: 0;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Queue / Stack 0.8</h1>
+</header>
+<p>Queue and stack with a rbtree-style interface. Both queue and stack use one next pointer and can be described as linked lists, except that the queue is actually an ring.</p>
+<h1 id="installation">Installation</h1>
+<p>Copy qs.h into your source.</p>
+<h1 id="api">API</h1>
+<h2 id="queue">Queue</h2>
+<dl class="incremental">
+<dt>qs_queue_bind_decl_m(context, type) alias rb_bind_decl_cx_m</dt>
+<dd><p>Bind the qs_queue function declarations for <em>type</em> to <em>context</em>. Usually used in a header.</p>
+</dd>
+<dt>qs_queue_bind_impl_m(context, type)</dt>
+<dd><p>Bind the qs_queue function implementations for <em>type</em> to <em>context</em>. Usually used in a c-file. This variant uses the standard <a href="">rb</a>*_m traits.</p>
+</dd>
+<dt>qs_queue_bind_impl_cx_m(context, type)</dt>
+<dd><p>Bind the qs_queue function implementations for <em>type</em> to <em>context</em>. Usually used in a c-file. This variant uses cx##_*_m traits, which means you have to define them.</p>
+</dd>
+<dt>qs_queue_bind_cx_m/qs_queue_bind_m(context, type)</dt>
+<dd><p>Shortcut to bind declaration and implementation at once.</p>
+</dd>
+</dl>
+<p>Then the following functions will be available.</p>
+<dl class="incremental">
+<dt>cx##_enqueue(type** queue, type* item)</dt>
+<dd><p>Enqueue an item to the queue.</p>
+</dd>
+<dt>cx##_dequeue(type** queue, type** item)</dt>
+<dd><p>Dequeue an item from the queue. Queue will be set to NULL when empty.</p>
+</dd>
+<dt>cx##_head(type* queue, type* item)</dt>
+<dd><p><em>item</em> will be set to the item in front of the queue, which equals the oldest item or the item that is going to be dequeud. Is NULL when the queue is empty.</p>
+</dd>
+<dt>cx##_head(type* queue, type* item)</dt>
+<dd><p><em>item</em> will be set to the item in the back of the queue, which equals the newest item. Is NULL when the queue is empty.</p>
+</dd>
+<dt>cx##_iter_init(type* tree, cx##_iter_t* iter, type** elem)</dt>
+<dd><p>Initializes <em>elem</em> to point to the first element in the queue. Use qs_queue_iter_decl_m to declare <em>iter</em> and <em>elem</em>. If the queue is empty <em>elem</em> will be a NULL-pointer.</p>
+</dd>
+<dt>cx##_iter_next(cx##_iter_t* iter, type** elem)</dt>
+<dd><p>Move <em>elem</em> to the next element in the queue. <em>elem</em> will point to NULL at the end.</p>
+</dd>
+<dt>cx##_top(type* stack, type* item)</dt>
+<dd><p><em>item</em> will be set to the item on top of the stack.</p>
+</dd>
+</dl>
+<p>You can use rb_for_m from rbtree.h with qs.</p>
+<h2 id="stack">Stack</h2>
+<dl class="incremental">
+<dt>qs_stack_bind_decl_m(context, type) alias rb_bind_decl_cx_m</dt>
+<dd><p>Bind the qs_stack function declarations for <em>type</em> to <em>context</em>. Usually used in a header.</p>
+</dd>
+<dt>qs_stack_bind_impl_m(context, type)</dt>
+<dd><p>Bind the qs_stack function implementations for <em>type</em> to <em>context</em>. Usually used in a c-file. This variant uses the standard <a href="">rb</a>*_m traits.</p>
+</dd>
+<dt>qs_stack_bind_impl_cx_m(context, type)</dt>
+<dd><p>Bind the qs_stack function implementations for <em>type</em> to <em>context</em>. Usually used in a c-file. This variant uses cx##_*_m traits, which means you have to define them.</p>
+</dd>
+<dt>qs_stack_bind_cx_m/qs_stack_bind_m(context, type)</dt>
+<dd><p>Shortcut to bind declaration and implementation at once.</p>
+</dd>
+</dl>
+<p>Then the following functions will be available.</p>
+<dl class="incremental">
+<dt>cx##_push(type** stack, type* item)</dt>
+<dd><p>Push an item to the stack.</p>
+</dd>
+<dt>cx##_pop(type** stack, type** item)</dt>
+<dd><p>Pop an item from the stack. Stack will be set to NULL when empty.</p>
+</dd>
+<dt>cx##_iter_init(type* tree, cx##_iter_t* iter, type** elem)</dt>
+<dd><p>Initializes <em>elem</em> to point to the first element in the stack. Use qs_stack_iter_decl_m to declare <em>iter</em> and <em>elem</em>. If the stack is empty <em>elem</em> will be a NULL-pointer.</p>
+</dd>
+<dt>cx##_iter_next(cx##_iter_t* iter, type** elem)</dt>
+<dd><p>Move <em>elem</em> to the next element in the stack. <em>elem</em> will point to NULL at the end.</p>
+</dd>
+</dl>
+<p>You can use rb_for_m from rbtree.h with qs.</p>
+<h1 id="implementation">Implementation</h1>
+<h2 id="includes">Includes</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#ifndef qs_stack_queue_h</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#define qs_stack_queue_h</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;assert.h&gt;</span></span></code></pre></div>
+<h2 id="traits">Traits</h2>
+<div class="sourceCode" id="cb2"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#define qs_next_m</span><span class="op">(</span>x<span class="op">)</span><span class="pp"> </span><span class="op">(</span>x<span class="op">)-&gt;</span>next</span></code></pre></div>
+<h2 id="queue-1">Queue</h2>
+<p>Common arguments</p>
+<dl class="incremental">
+<dt>next</dt>
+<dd><p>Get the next item of the queue</p>
+</dd>
+</dl>
+<pre class="text"><code>.---.        .---.
+| 2 |&lt;-next--| 1 |
+&#39;---&#39;        &#39;---&#39;
+  |next        ^
+  v        next|
+.---.        .---.
+| 3 |--next-&gt;| 4 |&lt;--queue--
+&#39;---&#39;        &#39;---&#39;</code></pre>
+<h2 id="qs_enqueue_m">qs_enqueue_m</h2>
+<p>Bound: cx##_enqueue</p>
+<p>Enqueues an item to the queue.</p>
+<dl class="incremental">
+<dt>queue</dt>
+<dd><p>Beginning of the queue</p>
+</dd>
+<dt>item</dt>
+<dd><p>Item to enqueue.</p>
+</dd>
+</dl>
+<div class="sourceCode" id="cb4"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#define qs_enqueue_m</span><span class="op">(</span>next<span class="op">,</span><span class="pp"> </span>queue<span class="op">,</span><span class="pp"> </span>item<span class="op">)</span><span class="pp">                                        </span><span class="op">\</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span><span class="op">{</span><span class="pp">                                                                          </span><span class="op">\</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="pp">        </span><span class="ot">assert</span><span class="op">(</span>next<span class="op">(</span>item<span class="op">)</span><span class="pp"> </span><span class="op">==</span><span class="pp"> </span>NULL<span class="pp"> </span><span class="op">&amp;&amp;</span><span class="pp"> </span><span class="st">&quot;Item already in use&quot;</span><span class="op">);</span><span class="pp">                   </span><span class="op">\</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="pp">        </span><span class="cf">if</span><span class="pp"> </span><span class="op">(</span>queue<span class="pp"> </span><span class="op">==</span><span class="pp"> </span>NULL<span class="op">)</span><span class="pp"> </span><span class="op">{</span><span class="pp">                                                   </span><span class="op">\</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="pp">            </span>next<span class="op">(</span>item<span class="op">)</span><span class="pp"> </span><span class="op">=</span><span class="pp"> </span>item<span class="op">;</span><span class="pp">                                                 </span><span class="op">\</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="pp">        </span><span class="op">}</span><span class="pp"> </span><span class="cf">else</span><span class="pp"> </span><span class="op">{</span><span class="pp">                                                               </span><span class="op">\</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="pp">            </span>next<span class="op">(</span>item<span class="op">)</span><span class="pp">  </span><span class="op">=</span><span class="pp"> </span>next<span class="op">(</span>queue<span class="op">);</span><span class="pp">                                         </span><span class="op">\</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="pp">            </span>next<span class="op">(</span>queue<span class="op">)</span><span class="pp"> </span><span class="op">=</span><span class="pp"> </span>item<span class="op">;</span><span class="pp">                                                </span><span class="op">\</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="pp">        </span><span class="op">}</span><span class="pp">                                                                      </span><span class="op">\</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="pp">        </span>queue<span class="pp"> </span><span class="op">=</span><span class="pp"> </span>item<span class="op">;</span><span class="pp">                                                          </span><span class="op">\</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span><span class="op">}</span></span></code></pre></div>
+<h2 id="qs_dequeue_m">qs_dequeue_m</h2>
+<p>Bound: cx##_dequeue</p>
+<p>Dequeue an item from the queue. Returns the first item in the queue (FIFO). Does nothing if the queue is empty.</p>
+<dl class="incremental">
+<dt>queue</dt>
+<dd><p>Beginning of the queue</p>
+</dd>
+<dt>item</dt>
+<dd><p>Item dequeued.</p>
+</dd>
+</dl>
+<div class="sourceCode" id="cb5"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#define qs_dequeue_m</span><span class="op">(</span>next<span class="op">,</span><span class="pp"> </span>queue<span class="op">,</span><span class="pp"> </span>item<span class="op">)</span><span class="pp">                                        </span><span class="op">\</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span><span class="op">{</span><span class="pp">                                                                          </span><span class="op">\</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="pp">        </span><span class="cf">if</span><span class="pp"> </span><span class="op">(</span>queue<span class="pp"> </span><span class="op">!=</span><span class="pp"> </span>NULL<span class="op">)</span><span class="pp"> </span><span class="op">{</span><span class="pp">                                                   </span><span class="op">\</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="pp">            </span>item<span class="pp"> </span><span class="op">=</span><span class="pp"> </span>next<span class="op">(</span>queue<span class="op">);</span><span class="pp">                                                </span><span class="op">\</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="pp">            </span><span class="cf">if</span><span class="pp"> </span><span class="op">(</span>next<span class="op">(</span>queue<span class="op">)</span><span class="pp"> </span><span class="op">==</span><span class="pp"> </span>queue<span class="op">)</span><span class="pp"> </span><span class="op">{</span><span class="pp">                                        </span><span class="op">\</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="pp">                </span>queue<span class="pp"> </span><span class="op">=</span><span class="pp"> </span>NULL<span class="op">;</span><span class="pp">                                                  </span><span class="op">\</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="pp">            </span><span class="op">}</span><span class="pp"> </span><span class="cf">else</span><span class="pp"> </span><span class="op">{</span><span class="pp">                                                           </span><span class="op">\</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="pp">                </span>next<span class="op">(</span>queue<span class="op">)</span><span class="pp"> </span><span class="op">=</span><span class="pp"> </span>next<span class="op">(</span>item<span class="op">);</span><span class="pp">                                      </span><span class="op">\</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="pp">            </span><span class="op">}</span><span class="pp">                                                                  </span><span class="op">\</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="pp">            </span>next<span class="op">(</span>item<span class="op">)</span><span class="pp"> </span><span class="op">=</span><span class="pp"> </span>NULL<span class="op">;</span><span class="pp">                                                 </span><span class="op">\</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="pp">        </span><span class="op">}</span><span class="pp"> </span><span class="cf">else</span><span class="pp"> </span><span class="op">{</span><span class="pp">                                                               </span><span class="op">\</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="pp">            </span>item<span class="pp"> </span><span class="op">=</span><span class="pp"> </span>NULL<span class="op">;</span><span class="pp">                                                       </span><span class="op">\</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="pp">        </span><span class="op">}</span><span class="pp">                                                                      </span><span class="op">\</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span><span class="op">}</span></span></code></pre></div>
+<h2 id="qs_queue_bind_decl_m">qs_queue_bind_decl_m</h2>
+<p>Alias: qs_queue_bind_decl_cx_m</p>
+<p>Bind queue functions to a context. This only generates declarations.</p>
+<dl class="incremental">
+<dt>cx</dt>
+<dd><p>Name of the new context.</p>
+</dd>
+<dt>type</dt>
+<dd><p>The type of the items of the queue.</p>
+</dd>
+</dl>
+<div class="sourceCode" id="cb6"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#define qs_queue_bind_decl_m</span><span class="op">(</span>cx<span class="op">,</span><span class="pp"> </span>type<span class="op">)</span><span class="pp">                                         </span><span class="op">\</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span><span class="kw">typedef</span><span class="pp"> </span>type<span class="pp"> </span>cx<span class="pp">##</span>_iter_t<span class="op">;</span><span class="pp">                                                  </span><span class="op">\</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span><span class="kw">typedef</span><span class="pp"> </span>type<span class="pp"> </span>cx<span class="pp">##</span>_type_t<span class="op">;</span><span class="pp">                                                  </span><span class="op">\</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span><span class="dt">void</span><span class="pp">         </span>cx<span class="pp">##</span>_enqueue<span class="op">(</span>type<span class="op">**</span><span class="pp"> </span>queue<span class="op">,</span><span class="pp"> </span>type<span class="op">*</span><span class="pp"> </span>item<span class="op">);</span><span class="pp">                       </span><span class="op">\</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span><span class="dt">void</span><span class="pp">         </span>cx<span class="pp">##</span>_dequeue<span class="op">(</span>type<span class="op">**</span><span class="pp"> </span>queue<span class="op">,</span><span class="pp"> </span>type<span class="op">**</span><span class="pp"> </span>item<span class="op">);</span><span class="pp">                      </span><span class="op">\</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span><span class="dt">void</span><span class="pp">         </span>cx<span class="pp">##</span>_iter_init<span class="op">(</span>type<span class="op">*</span><span class="pp"> </span>queue<span class="op">,</span><span class="pp"> </span>cx<span class="pp">##</span>_iter_t<span class="op">**</span><span class="pp"> </span>iter<span class="op">,</span><span class="pp"> </span>type<span class="op">**</span><span class="pp"> </span>elem<span class="op">);</span><span class="pp"> </span><span class="op">\</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span><span class="dt">void</span><span class="pp">         </span>cx<span class="pp">##</span>_iter_next<span class="op">(</span>cx<span class="pp">##</span>_iter_t<span class="op">*</span><span class="pp"> </span>iter<span class="op">,</span><span class="pp"> </span>type<span class="op">**</span><span class="pp"> </span>elem<span class="op">);</span><span class="pp">               </span><span class="op">\</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span><span class="dt">void</span><span class="pp">         </span>cx<span class="pp">##</span>_head<span class="op">(</span>type<span class="op">*</span><span class="pp"> </span>queue<span class="op">,</span><span class="pp"> </span>type<span class="op">**</span><span class="pp"> </span>item<span class="op">);</span><span class="pp">                          </span><span class="op">\</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span><span class="dt">void</span><span class="pp">         </span>cx<span class="pp">##</span>_tail<span class="op">(</span>type<span class="op">*</span><span class="pp"> </span>queue<span class="op">,</span><span class="pp"> </span>type<span class="op">**</span><span class="pp"> </span>item<span class="op">);</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="pp">#define qs_queue_bind_decl_cx_m</span><span class="op">(</span>cx<span class="op">,</span><span class="pp"> </span>type<span class="op">)</span><span class="pp"> </span>qs_queue_bind_decl_m<span class="op">(</span>cx<span class="op">,</span><span class="pp"> </span>type<span class="op">)</span></span></code></pre></div>
+<h2 id="qs_queue_bind_impl_m">qs_queue_bind_impl_m</h2>
+<p>Bind queue functions to a context. This only generates implementations.</p>
+<p>qs_queue_bind_impl_m uses qs_next_m. qs_queue_bind_impl_cx_m uses cx##_next_m.</p>
+<dl class="incremental">
+<dt>cx</dt>
+<dd><p>Name of the new context.</p>
+</dd>
+<dt>type</dt>
+<dd><p>The type of the items of the queue.</p>
+</dd>
+</dl>
+<div class="sourceCode" id="cb7"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#define _qs_queue_bind_impl_tr_m</span><span class="op">(</span>cx<span class="op">,</span><span class="pp"> </span>type<span class="op">,</span><span class="pp"> </span>next<span class="op">)</span><span class="pp">                               </span><span class="op">\</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span><span class="dt">void</span><span class="pp"> </span>cx<span class="pp">##</span>_enqueue<span class="op">(</span>type<span class="op">**</span><span class="pp"> </span>queue<span class="op">,</span><span class="pp"> </span>type<span class="op">*</span><span class="pp"> </span>item<span class="op">)</span><span class="pp"> </span>qs_enqueue_m<span class="op">(</span><span class="pp">                  </span><span class="op">\</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="pp">            </span>next<span class="op">,</span><span class="pp"> </span><span class="op">*</span>queue<span class="op">,</span><span class="pp"> </span>item<span class="op">)</span><span class="pp"> </span><span class="dt">void</span><span class="pp"> </span>cx<span class="pp">##</span>_dequeue<span class="op">(</span>type<span class="op">**</span><span class="pp"> </span>queue<span class="op">,</span><span class="pp"> </span>type<span class="op">**</span><span class="pp"> </span>item<span class="op">)</span><span class="pp">   </span><span class="op">\</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="pp">            </span>qs_dequeue_m<span class="op">(</span>next<span class="op">,</span><span class="pp"> </span><span class="op">*</span>queue<span class="op">,</span><span class="pp"> </span><span class="op">*</span>item<span class="op">)</span><span class="pp"> </span><span class="dt">void</span><span class="pp"> </span>cx<span class="pp">##</span>_iter_init<span class="op">(</span><span class="pp">             </span><span class="op">\</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="pp">                    </span>type<span class="op">*</span><span class="pp"> </span>queue<span class="op">,</span><span class="pp"> </span>cx<span class="pp">##</span>_iter_t<span class="op">**</span><span class="pp"> </span>iter<span class="op">,</span><span class="pp"> </span>type<span class="op">**</span><span class="pp"> </span>elem<span class="op">)</span><span class="pp">              </span><span class="op">\</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span><span class="op">{</span><span class="pp">                                                                          </span><span class="op">\</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="pp">        </span>qs_queue_iter_init_m<span class="op">(</span>next<span class="op">,</span><span class="pp"> </span>queue<span class="op">,</span><span class="pp"> </span><span class="op">*</span>iter<span class="op">,</span><span class="pp"> </span><span class="op">*</span>elem<span class="op">);</span><span class="pp">                       </span><span class="op">\</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span><span class="op">}</span><span class="pp">                                                                          </span><span class="op">\</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span><span class="dt">void</span><span class="pp"> </span>cx<span class="pp">##</span>_iter_next<span class="op">(</span>cx<span class="pp">##</span>_iter_t<span class="op">*</span><span class="pp"> </span>iter<span class="op">,</span><span class="pp"> </span>type<span class="op">**</span><span class="pp"> </span>elem<span class="op">)</span><span class="pp">                        </span><span class="op">\</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span><span class="op">{</span><span class="pp">                                                                          </span><span class="op">\</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="pp">        </span>qs_queue_iter_next_m<span class="op">(</span>next<span class="op">,</span><span class="pp"> </span>iter<span class="op">,</span><span class="pp"> </span><span class="op">*</span>elem<span class="op">)</span><span class="pp">                                </span><span class="op">\</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span><span class="op">}</span><span class="pp">                                                                          </span><span class="op">\</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span><span class="dt">void</span><span class="pp"> </span>cx<span class="pp">##</span>_head<span class="op">(</span>type<span class="op">*</span><span class="pp"> </span>queue<span class="op">,</span><span class="pp"> </span>type<span class="op">**</span><span class="pp"> </span>item<span class="op">)</span><span class="pp">                                   </span><span class="op">\</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span><span class="op">{</span><span class="pp">                                                                          </span><span class="op">\</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="pp">        </span><span class="cf">if</span><span class="pp"> </span><span class="op">(</span>queue<span class="pp"> </span><span class="op">!=</span><span class="pp"> </span>NULL<span class="op">)</span><span class="pp"> </span><span class="op">{</span><span class="pp">                                                   </span><span class="op">\</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="pp">            </span><span class="op">*</span>item<span class="pp"> </span><span class="op">=</span><span class="pp"> </span>next<span class="op">(</span>queue<span class="op">);</span><span class="pp">                                               </span><span class="op">\</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="pp">        </span><span class="op">}</span><span class="pp"> </span><span class="cf">else</span><span class="pp"> </span><span class="op">{</span><span class="pp">                                                               </span><span class="op">\</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="pp">            </span><span class="op">*</span>item<span class="pp"> </span><span class="op">=</span><span class="pp"> </span>NULL<span class="op">;</span><span class="pp">                                                      </span><span class="op">\</span></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="pp">        </span><span class="op">}</span><span class="pp">                                                                      </span><span class="op">\</span></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span><span class="op">}</span><span class="pp">                                                                          </span><span class="op">\</span></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span><span class="dt">void</span><span class="pp"> </span>cx<span class="pp">##</span>_tail<span class="op">(</span>type<span class="op">*</span><span class="pp"> </span>queue<span class="op">,</span><span class="pp"> </span>type<span class="op">**</span><span class="pp"> </span>item<span class="op">)</span><span class="pp"> </span><span class="op">{</span><span class="pp"> </span><span class="op">*</span>item<span class="pp"> </span><span class="op">=</span><span class="pp"> </span>queue<span class="op">;</span><span class="pp"> </span><span class="op">}</span></span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a><span class="pp">#define qs_queue_bind_impl_cx_m</span><span class="op">(</span>cx<span class="op">,</span><span class="pp"> </span>type<span class="op">)</span><span class="pp">                                      </span><span class="op">\</span></span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span>_qs_queue_bind_impl_tr_m<span class="op">(</span>cx<span class="op">,</span><span class="pp"> </span>type<span class="op">,</span><span class="pp"> </span>cx<span class="pp">##</span>_next_m<span class="op">)</span></span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a><span class="pp">#define qs_queue_bind_impl_m</span><span class="op">(</span>cx<span class="op">,</span><span class="pp"> </span>type<span class="op">)</span><span class="pp">                                         </span><span class="op">\</span></span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span>_qs_queue_bind_impl_tr_m<span class="op">(</span>cx<span class="op">,</span><span class="pp"> </span>type<span class="op">,</span><span class="pp"> </span>qs_next_m<span class="op">)</span></span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a><span class="pp">#define qs_queue_bind_cx_m</span><span class="op">(</span>cx<span class="op">,</span><span class="pp"> </span>type<span class="op">)</span><span class="pp">                                           </span><span class="op">\</span></span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span>qs_queue_bind_decl_cx_m<span class="op">(</span>cx<span class="op">,</span><span class="pp"> </span>type<span class="op">)</span><span class="pp"> </span>qs_queue_bind_impl_cx_m<span class="op">(</span>cx<span class="op">,</span><span class="pp"> </span>type<span class="op">)</span></span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a><span class="pp">#define qs_queue_bind_m</span><span class="op">(</span>cx<span class="op">,</span><span class="pp"> </span>type<span class="op">)</span><span class="pp">                                              </span><span class="op">\</span></span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span>qs_queue_bind_decl_m<span class="op">(</span>cx<span class="op">,</span><span class="pp"> </span>type<span class="op">)</span><span class="pp"> </span>qs_queue_bind_impl_m<span class="op">(</span>cx<span class="op">,</span><span class="pp"> </span>type<span class="op">)</span></span></code></pre></div>
+<h2 id="qs_queue_iter_decl_m">qs_queue_iter_decl_m</h2>
+<p>Also: qs_queue_iter_decl_cx_m</p>
+<p>Declare iterator variables.</p>
+<dl class="incremental">
+<dt>iter</dt>
+<dd><p>The new iterator variable.</p>
+</dd>
+<dt>elem</dt>
+<dd><p>The pointer to the current element.</p>
+</dd>
+</dl>
+<div class="sourceCode" id="cb8"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#define qs_queue_iter_decl_m</span><span class="op">(</span>type<span class="op">,</span><span class="pp"> </span>iter<span class="op">,</span><span class="pp"> </span>elem<span class="op">)</span><span class="pp">                                 </span><span class="op">\</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span>type<span class="op">*</span><span class="pp"> </span>iter<span class="pp"> </span><span class="op">=</span><span class="pp"> </span>NULL<span class="op">;</span><span class="pp">                                                         </span><span class="op">\</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span>type<span class="op">*</span><span class="pp"> </span>elem<span class="pp"> </span><span class="op">=</span><span class="pp"> </span>NULL<span class="op">;</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="pp">#define qs_queue_iter_decl_cx_m</span><span class="op">(</span>cx<span class="op">,</span><span class="pp"> </span>iter<span class="op">,</span><span class="pp"> </span>elem<span class="op">)</span><span class="pp">                                </span><span class="op">\</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span>cx<span class="pp">##</span>_type_t<span class="op">*</span><span class="pp"> </span>iter<span class="pp"> </span><span class="op">=</span><span class="pp"> </span>NULL<span class="op">;</span><span class="pp">                                                  </span><span class="op">\</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span>cx<span class="pp">##</span>_type_t<span class="op">*</span><span class="pp"> </span>elem<span class="pp"> </span><span class="op">=</span><span class="pp"> </span>NULL<span class="op">;</span></span></code></pre></div>
+<h2 id="qs_queue_iter_init_m">qs_queue_iter_init_m</h2>
+<p>Bound: cx##_iter_init</p>
+<p>Initialize iterator. It will point to the first element or NULL if the queue is empty.</p>
+<dl class="incremental">
+<dt>queue</dt>
+<dd><p>The queue.</p>
+</dd>
+<dt>iter</dt>
+<dd><p>The iterator.</p>
+</dd>
+<dt>elem</dt>
+<dd><p>The pointer to the current element.</p>
+</dd>
+</dl>
+<div class="sourceCode" id="cb9"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#define qs_queue_iter_init_m</span><span class="op">(</span>next<span class="op">,</span><span class="pp"> </span>queue<span class="op">,</span><span class="pp"> </span>iter<span class="op">,</span><span class="pp"> </span>elem<span class="op">)</span><span class="pp">                          </span><span class="op">\</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span><span class="op">{</span><span class="pp">                                                                          </span><span class="op">\</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="pp">        </span>iter<span class="pp"> </span><span class="op">=</span><span class="pp"> </span>queue<span class="op">;</span><span class="pp">                                                          </span><span class="op">\</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="pp">        </span><span class="cf">if</span><span class="pp"> </span><span class="op">(</span>queue<span class="pp"> </span><span class="op">==</span><span class="pp"> </span>NULL<span class="op">)</span><span class="pp"> </span><span class="op">{</span><span class="pp">                                                   </span><span class="op">\</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="pp">            </span>elem<span class="pp"> </span><span class="op">=</span><span class="pp"> </span>NULL<span class="op">;</span><span class="pp">                                                       </span><span class="op">\</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="pp">        </span><span class="op">}</span><span class="pp"> </span><span class="cf">else</span><span class="pp"> </span><span class="op">{</span><span class="pp">                                                               </span><span class="op">\</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="pp">            </span>elem<span class="pp"> </span><span class="op">=</span><span class="pp"> </span>next<span class="op">(</span>queue<span class="op">);</span><span class="pp">                                                </span><span class="op">\</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="pp">        </span><span class="op">}</span><span class="pp">                                                                      </span><span class="op">\</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span><span class="op">}</span></span></code></pre></div>
+<h2 id="qs_queue_iter_next_m">qs_queue_iter_next_m</h2>
+<p>Bound: cx##_iter_next</p>
+<p>Initialize iterator. It will point to the first element. The element will be NULL, if the iteration is at the end.</p>
+<dl class="incremental">
+<dt>queue</dt>
+<dd><p>The queue.</p>
+</dd>
+<dt>elem</dt>
+<dd><p>The pointer to the current element.</p>
+</dd>
+</dl>
+<div class="sourceCode" id="cb10"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#define qs_queue_iter_next_m</span><span class="op">(</span>next<span class="op">,</span><span class="pp"> </span>queue<span class="op">,</span><span class="pp"> </span>elem<span class="op">)</span><span class="pp">                                </span><span class="op">\</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span><span class="op">{</span><span class="pp">                                                                          </span><span class="op">\</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="pp">        </span><span class="cf">if</span><span class="pp"> </span><span class="op">(</span>elem<span class="pp"> </span><span class="op">==</span><span class="pp"> </span>queue<span class="op">)</span><span class="pp"> </span><span class="op">{</span><span class="pp">                                                   </span><span class="op">\</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="pp">            </span>elem<span class="pp"> </span><span class="op">=</span><span class="pp"> </span>NULL<span class="op">;</span><span class="pp">                                                       </span><span class="op">\</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="pp">        </span><span class="op">}</span><span class="pp"> </span><span class="cf">else</span><span class="pp"> </span><span class="op">{</span><span class="pp">                                                               </span><span class="op">\</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="pp">            </span>elem<span class="pp"> </span><span class="op">=</span><span class="pp"> </span>next<span class="op">(</span>elem<span class="op">);</span><span class="pp">                                                 </span><span class="op">\</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="pp">        </span><span class="op">}</span><span class="pp">                                                                      </span><span class="op">\</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span><span class="op">}</span></span></code></pre></div>
+<h2 id="stack-1">Stack</h2>
+<p>Common arguments</p>
+<dl class="incremental">
+<dt>next</dt>
+<dd><p>Get the next item of the stack</p>
+</dd>
+</dl>
+<h2 id="qs_push_m">qs_push_m</h2>
+<p>Bound: cx##_push</p>
+<p>Push an item to the stack.</p>
+<dl class="incremental">
+<dt>stack</dt>
+<dd><p>Base pointer to the stack.</p>
+</dd>
+<dt>item</dt>
+<dd><p>Item to push.</p>
+</dd>
+</dl>
+<div class="sourceCode" id="cb11"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#define qs_push_m</span><span class="op">(</span>next<span class="op">,</span><span class="pp"> </span>stack<span class="op">,</span><span class="pp"> </span>item<span class="op">)</span><span class="pp">                                           </span><span class="op">\</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span><span class="op">{</span><span class="pp">                                                                          </span><span class="op">\</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="pp">        </span><span class="ot">assert</span><span class="op">(</span>next<span class="op">(</span>item<span class="op">)</span><span class="pp"> </span><span class="op">==</span><span class="pp"> </span>NULL<span class="pp"> </span><span class="op">&amp;&amp;</span><span class="pp"> </span><span class="st">&quot;Item already in use&quot;</span><span class="op">);</span><span class="pp">                   </span><span class="op">\</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="pp">        </span>next<span class="op">(</span>item<span class="op">)</span><span class="pp"> </span><span class="op">=</span><span class="pp"> </span>stack<span class="op">;</span><span class="pp">                                                    </span><span class="op">\</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="pp">        </span>stack<span class="pp">      </span><span class="op">=</span><span class="pp"> </span>item<span class="op">;</span><span class="pp">                                                     </span><span class="op">\</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span><span class="op">}</span></span></code></pre></div>
+<h2 id="qs_pop_m">qs_pop_m</h2>
+<p>Bound: cx##_pop</p>
+<p>Pop an item from the stack. Returns the last item in the stack (LIFO). Does nothing if the stack is empty.</p>
+<dl class="incremental">
+<dt>stack</dt>
+<dd><p>Base pointer to the stack.</p>
+</dd>
+<dt>item</dt>
+<dd><p>Item popped.</p>
+</dd>
+</dl>
+<div class="sourceCode" id="cb12"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#define qs_pop_m</span><span class="op">(</span>next<span class="op">,</span><span class="pp"> </span>stack<span class="op">,</span><span class="pp"> </span>item<span class="op">)</span><span class="pp">                                            </span><span class="op">\</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span><span class="op">{</span><span class="pp">                                                                          </span><span class="op">\</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="pp">        </span>item<span class="pp"> </span><span class="op">=</span><span class="pp"> </span>stack<span class="op">;</span><span class="pp">                                                          </span><span class="op">\</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="pp">        </span><span class="cf">if</span><span class="pp"> </span><span class="op">(</span>stack<span class="pp"> </span><span class="op">!=</span><span class="pp"> </span>NULL<span class="op">)</span><span class="pp"> </span><span class="op">{</span><span class="pp">                                                   </span><span class="op">\</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="pp">            </span>stack<span class="pp">      </span><span class="op">=</span><span class="pp"> </span>next<span class="op">(</span>stack<span class="op">);</span><span class="pp">                                          </span><span class="op">\</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="pp">            </span>next<span class="op">(</span>item<span class="op">)</span><span class="pp"> </span><span class="op">=</span><span class="pp"> </span>NULL<span class="op">;</span><span class="pp">                                                 </span><span class="op">\</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="pp">        </span><span class="op">}</span><span class="pp">                                                                      </span><span class="op">\</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span><span class="op">}</span></span></code></pre></div>
+<h2 id="qs_stack_bind_decl_m">qs_stack_bind_decl_m</h2>
+<p>Alias: qs_stack_bind_decl_cx_m</p>
+<p>Bind stack functions to a context. This only generates declarations.</p>
+<dl class="incremental">
+<dt>cx</dt>
+<dd><p>Name of the new context.</p>
+</dd>
+<dt>type</dt>
+<dd><p>The type of the items of the stack.</p>
+</dd>
+</dl>
+<div class="sourceCode" id="cb13"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#define qs_stack_bind_decl_m</span><span class="op">(</span>cx<span class="op">,</span><span class="pp"> </span>type<span class="op">)</span><span class="pp">                                         </span><span class="op">\</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span><span class="kw">typedef</span><span class="pp"> </span>type<span class="pp"> </span>cx<span class="pp">##</span>_iter_t<span class="op">;</span><span class="pp">                                                  </span><span class="op">\</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span><span class="kw">typedef</span><span class="pp"> </span>type<span class="pp"> </span>cx<span class="pp">##</span>_type_t<span class="op">;</span><span class="pp">                                                  </span><span class="op">\</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span><span class="dt">void</span><span class="pp">         </span>cx<span class="pp">##</span>_push<span class="op">(</span>type<span class="op">**</span><span class="pp"> </span>stack<span class="op">,</span><span class="pp"> </span>type<span class="op">*</span><span class="pp"> </span>item<span class="op">);</span><span class="pp">                          </span><span class="op">\</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span><span class="dt">void</span><span class="pp">         </span>cx<span class="pp">##</span>_pop<span class="op">(</span>type<span class="op">**</span><span class="pp"> </span>stack<span class="op">,</span><span class="pp"> </span>type<span class="op">**</span><span class="pp"> </span>item<span class="op">);</span><span class="pp">                          </span><span class="op">\</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span><span class="dt">void</span><span class="pp">         </span>cx<span class="pp">##</span>_iter_init<span class="op">(</span>type<span class="op">*</span><span class="pp"> </span>stack<span class="op">,</span><span class="pp"> </span>cx<span class="pp">##</span>_iter_t<span class="op">**</span><span class="pp"> </span>iter<span class="op">,</span><span class="pp"> </span>type<span class="op">**</span><span class="pp"> </span>elem<span class="op">);</span><span class="pp"> </span><span class="op">\</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span><span class="dt">void</span><span class="pp">         </span>cx<span class="pp">##</span>_iter_next<span class="op">(</span>cx<span class="pp">##</span>_iter_t<span class="op">*</span><span class="pp"> </span>iter<span class="op">,</span><span class="pp"> </span>type<span class="op">**</span><span class="pp"> </span>elem<span class="op">);</span><span class="pp">               </span><span class="op">\</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span><span class="dt">void</span><span class="pp">         </span>cx<span class="pp">##</span>_top<span class="op">(</span>type<span class="op">*</span><span class="pp"> </span>stack<span class="op">,</span><span class="pp"> </span>type<span class="op">**</span><span class="pp"> </span>item<span class="op">);</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a><span class="pp">#define qs_stack_bind_decl_cx_m</span><span class="op">(</span>cx<span class="op">,</span><span class="pp"> </span>type<span class="op">)</span><span class="pp"> </span>qs_stack_bind_decl_m<span class="op">(</span>cx<span class="op">,</span><span class="pp"> </span>type<span class="op">)</span></span></code></pre></div>
+<h2 id="qs_stack_bind_impl_m">qs_stack_bind_impl_m</h2>
+<p>Bind stack functions to a context. This only generates implementations.</p>
+<p>qs_stack_bind_impl_m uses qs_next_m. qs_stack_bind_impl_cx_m uses cx##_next_m.</p>
+<dl class="incremental">
+<dt>cx</dt>
+<dd><p>Name of the new context.</p>
+</dd>
+<dt>type</dt>
+<dd><p>The type of the items of the stack.</p>
+</dd>
+</dl>
+<div class="sourceCode" id="cb14"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#define _qs_stack_bind_impl_tr_m</span><span class="op">(</span>cx<span class="op">,</span><span class="pp"> </span>type<span class="op">,</span><span class="pp"> </span>next<span class="op">)</span><span class="pp">                               </span><span class="op">\</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span><span class="dt">void</span><span class="pp"> </span>cx<span class="pp">##</span>_push<span class="op">(</span>type<span class="op">**</span><span class="pp"> </span>stack<span class="op">,</span><span class="pp"> </span>type<span class="op">*</span><span class="pp"> </span>item<span class="op">)</span><span class="pp"> </span>qs_push_m<span class="op">(</span><span class="pp">                        </span><span class="op">\</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="pp">            </span>next<span class="op">,</span><span class="pp"> </span><span class="op">*</span>stack<span class="op">,</span><span class="pp"> </span>item<span class="op">)</span><span class="pp"> </span><span class="dt">void</span><span class="pp"> </span>cx<span class="pp">##</span>_pop<span class="op">(</span>type<span class="op">**</span><span class="pp"> </span>stack<span class="op">,</span><span class="pp"> </span>type<span class="op">**</span><span class="pp"> </span>item<span class="op">)</span><span class="pp">       </span><span class="op">\</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="pp">            </span>qs_pop_m<span class="op">(</span>next<span class="op">,</span><span class="pp"> </span><span class="op">*</span>stack<span class="op">,</span><span class="pp"> </span><span class="op">*</span>item<span class="op">)</span><span class="pp"> </span><span class="dt">void</span><span class="pp"> </span>cx<span class="pp">##</span>_iter_init<span class="op">(</span><span class="pp">                 </span><span class="op">\</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="pp">                    </span>type<span class="op">*</span><span class="pp"> </span>stack<span class="op">,</span><span class="pp"> </span>cx<span class="pp">##</span>_iter_t<span class="op">**</span><span class="pp"> </span>iter<span class="op">,</span><span class="pp"> </span>type<span class="op">**</span><span class="pp"> </span>elem<span class="op">)</span><span class="pp">              </span><span class="op">\</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span><span class="op">{</span><span class="pp">                                                                          </span><span class="op">\</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="pp">        </span><span class="op">(</span><span class="dt">void</span><span class="op">)</span><span class="pp"> </span><span class="op">(</span>iter<span class="op">);</span><span class="pp">                                                         </span><span class="op">\</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="pp">        </span>qs_stack_iter_init_m<span class="op">(</span>next<span class="op">,</span><span class="pp"> </span>stack<span class="op">,</span><span class="pp"> </span><span class="op">*</span>elem<span class="op">);</span><span class="pp">                              </span><span class="op">\</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span><span class="op">}</span><span class="pp">                                                                          </span><span class="op">\</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span><span class="dt">void</span><span class="pp"> </span>cx<span class="pp">##</span>_iter_next<span class="op">(</span>cx<span class="pp">##</span>_iter_t<span class="op">*</span><span class="pp"> </span>iter<span class="op">,</span><span class="pp"> </span>type<span class="op">**</span><span class="pp"> </span>elem<span class="op">)</span><span class="pp">                        </span><span class="op">\</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span><span class="op">{</span><span class="pp">                                                                          </span><span class="op">\</span></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a><span class="pp">        </span><span class="op">(</span><span class="dt">void</span><span class="op">)</span><span class="pp"> </span><span class="op">(</span>iter<span class="op">);</span><span class="pp">                                                         </span><span class="op">\</span></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a><span class="pp">        </span>qs_stack_iter_next_m<span class="op">(</span>next<span class="op">,</span><span class="pp"> </span><span class="op">*</span>elem<span class="op">)</span><span class="pp">                                      </span><span class="op">\</span></span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span><span class="op">}</span><span class="pp">                                                                          </span><span class="op">\</span></span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span><span class="dt">void</span><span class="pp"> </span>cx<span class="pp">##</span>_top<span class="op">(</span>type<span class="op">*</span><span class="pp"> </span>stack<span class="op">,</span><span class="pp"> </span>type<span class="op">**</span><span class="pp"> </span>item<span class="op">)</span><span class="pp"> </span><span class="op">{</span><span class="pp"> </span><span class="op">*</span>item<span class="pp"> </span><span class="op">=</span><span class="pp"> </span>stack<span class="op">;</span><span class="pp"> </span><span class="op">}</span></span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a><span class="pp">#define qs_stack_bind_impl_cx_m</span><span class="op">(</span>cx<span class="op">,</span><span class="pp"> </span>type<span class="op">)</span><span class="pp">                                      </span><span class="op">\</span></span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span>_qs_stack_bind_impl_tr_m<span class="op">(</span>cx<span class="op">,</span><span class="pp"> </span>type<span class="op">,</span><span class="pp"> </span>cx<span class="pp">##</span>_next_m<span class="op">)</span></span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a><span class="pp">#define qs_stack_bind_impl_m</span><span class="op">(</span>cx<span class="op">,</span><span class="pp"> </span>type<span class="op">)</span><span class="pp">                                         </span><span class="op">\</span></span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span>_qs_stack_bind_impl_tr_m<span class="op">(</span>cx<span class="op">,</span><span class="pp"> </span>type<span class="op">,</span><span class="pp"> </span>qs_next_m<span class="op">)</span></span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a><span class="pp">#define qs_stack_bind_cx_m</span><span class="op">(</span>cx<span class="op">,</span><span class="pp"> </span>type<span class="op">)</span><span class="pp">                                           </span><span class="op">\</span></span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span>qs_stack_bind_decl_cx_m<span class="op">(</span>cx<span class="op">,</span><span class="pp"> </span>type<span class="op">)</span><span class="pp"> </span>qs_stack_bind_impl_cx_m<span class="op">(</span>cx<span class="op">,</span><span class="pp"> </span>type<span class="op">)</span></span>
+<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a><span class="pp">#define qs_stack_bind_m</span><span class="op">(</span>cx<span class="op">,</span><span class="pp"> </span>type<span class="op">)</span><span class="pp">                                              </span><span class="op">\</span></span>
+<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span>qs_stack_bind_decl_m<span class="op">(</span>cx<span class="op">,</span><span class="pp"> </span>type<span class="op">)</span><span class="pp"> </span>qs_stack_bind_impl_m<span class="op">(</span>cx<span class="op">,</span><span class="pp"> </span>type<span class="op">)</span></span></code></pre></div>
+<h2 id="qs_stack_iter_decl_m">qs_stack_iter_decl_m</h2>
+<p>Also: qs_stack_iter_decl_cx_m</p>
+<p>Declare iterator variables.</p>
+<dl class="incremental">
+<dt>iter</dt>
+<dd><p>The new iterator variable.</p>
+</dd>
+<dt>elem</dt>
+<dd><p>The pointer to the current element.</p>
+</dd>
+</dl>
+<div class="sourceCode" id="cb15"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#define qs_stack_iter_decl_m</span><span class="op">(</span>type<span class="op">,</span><span class="pp"> </span>iter<span class="op">,</span><span class="pp"> </span>elem<span class="op">)</span><span class="pp">                                 </span><span class="op">\</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span>type<span class="op">*</span><span class="pp"> </span>iter<span class="pp"> </span><span class="op">=</span><span class="pp"> </span>NULL<span class="op">;</span><span class="pp">                                                         </span><span class="op">\</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span>type<span class="op">*</span><span class="pp"> </span>elem<span class="pp"> </span><span class="op">=</span><span class="pp"> </span>NULL<span class="op">;</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="pp">#define qs_stack_iter_decl_cx_m</span><span class="op">(</span>cx<span class="op">,</span><span class="pp"> </span>iter<span class="op">,</span><span class="pp"> </span>elem<span class="op">)</span><span class="pp">                                </span><span class="op">\</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span>cx<span class="pp">##</span>_type_t<span class="op">*</span><span class="pp"> </span>iter<span class="pp"> </span><span class="op">=</span><span class="pp"> </span>NULL<span class="op">;</span><span class="pp">                                                  </span><span class="op">\</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span>cx<span class="pp">##</span>_type_t<span class="op">*</span><span class="pp"> </span>elem<span class="pp"> </span><span class="op">=</span><span class="pp"> </span>NULL<span class="op">;</span></span></code></pre></div>
+<h2 id="qs_stack_iter_init_m">qs_stack_iter_init_m</h2>
+<p>Bound: cx##_iter_init</p>
+<p>Initialize iterator. It will point to the first element or NULL if the stack is empty.</p>
+<dl class="incremental">
+<dt>stack</dt>
+<dd><p>Base pointer to the stack.</p>
+</dd>
+<dt>elem</dt>
+<dd><p>The pointer to the current element.</p>
+</dd>
+</dl>
+<div class="sourceCode" id="cb16"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#define qs_stack_iter_init_m</span><span class="op">(</span>next<span class="op">,</span><span class="pp"> </span>stack<span class="op">,</span><span class="pp"> </span>elem<span class="op">)</span><span class="pp">                                </span><span class="op">\</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span><span class="op">{</span><span class="pp">                                                                          </span><span class="op">\</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="pp">        </span>elem<span class="pp"> </span><span class="op">=</span><span class="pp"> </span>stack<span class="op">;</span><span class="pp">                                                          </span><span class="op">\</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span><span class="op">}</span></span></code></pre></div>
+<h2 id="qs_stack_iter_next_m">qs_stack_iter_next_m</h2>
+<p>Bound: cx##_iter_next</p>
+<p>Initialize iterator. It will point to the first element. The element will be NULL, if the iteration is at the end.</p>
+<dl class="incremental">
+<dt>elem</dt>
+<dd><p>The pointer to the current element.</p>
+</dd>
+</dl>
+<div class="sourceCode" id="cb17"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#define qs_stack_iter_next_m</span><span class="op">(</span>next<span class="op">,</span><span class="pp"> </span>elem<span class="op">)</span><span class="pp">                                       </span><span class="op">\</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span><span class="op">{</span><span class="pp">                                                                          </span><span class="op">\</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="pp">        </span>elem<span class="pp"> </span><span class="op">=</span><span class="pp"> </span>next<span class="op">(</span>elem<span class="op">);</span><span class="pp">                                                     </span><span class="op">\</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="pp">    </span><span class="op">}</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="pp">#endif </span><span class="co">// qs_stack_queue_h</span></span></code></pre></div>
+</body>
+</html>
