@@ -9,8 +9,8 @@ I had my quite egocentric code-formatting back then. So I run `rbtree.h` and
 `qs.h` through clang-format. I also removed all mention of chirp and some other
 crazy ideas I had back then.
 
-* `rbtree.h` is a humble red-black tree implementation
-* `qs.h` is a humble queue, stack and ring implementation
+* [rbtree.h](rbtree.rst) is a humble red-black tree implementation
+* [qs.h](qs.rst) is a humble queue, stack and ring implementation
 * performance is very well and it should be very readable and good for learning
 
 It runs with C99 and there shouldn't be any bugs, it was tested this like crazy.
