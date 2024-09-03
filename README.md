@@ -26,3 +26,25 @@ Copy [rbtree.h](rbtree.h) and/or [qs.h](qs.h) to you source. The only
 dependency is `assert.h`, but you can get rid of that easily if you want.
 
 #### License is AGPL-3.0-or-later
+
+Repository Status: Completed
+============================
+
+This repository hosts a project that is considered complete in terms of its
+initial development goals. It remains publicly available for transparency,
+sharing methodologies, and as a resource for others who might find the
+implementations useful. Please note the following:
+
+- **Project Completion**: The project has reached completion and fulfills the
+  goals it was set to achieve. While I fully support this project, I do not
+  anticipate significant changes or additions in the future.
+- **Supported but Stable**: I am committed to supporting this project by
+  addressing bugs and critical issues. However, the codebase is stable and
+  intended to remain largely as it is.
+- **Active Support Available**: I am available to provide support and respond to
+  issues. Feel free to contact me with questions or if you need help understanding
+  the project.
+- **Viewing and Forking Encouraged**: You are welcome to view, fork, or use the
+  code in your own projects. This project is provided as-is but is well-documented
+  and maintained for reliability.
+
